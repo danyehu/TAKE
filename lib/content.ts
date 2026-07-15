@@ -23,28 +23,22 @@ export const upcoming = sessions.filter((s) => s.status === "coming-soon");
 export const latest = released[0];
 export const links = data.links;
 export const youtubeChannelId = data.youtubeChannelId;
-export type BtsItem = { src: string; size?: "s" | "m" | "l"; ratio?: number };
+export type BtsItem = { src: string; ratio?: number; x?: number; y?: number; w?: number };
 
-/** תאי המונטאז': עמודות ושורות (רשת 12) לפי הפורמט המקורי + הגודל שנבחר */
-export function btsSpan(b: BtsItem): { c: number; r: number } {
-  const ratio = b.ratio ?? 1.5;
-  const size = b.size ?? "m";
-  const portrait = ratio < 0.9;
-  if (portrait) {
-    if (size === "s") return { c: 3, r: 5 };
-    if (size === "l") return { c: 6, r: 9 };
-    return { c: 4, r: 6 };
-  }
-  if (size === "s") return { c: 4, r: 3 };
-  if (size === "l") return { c: 8, r: 6 };
-  return { c: 6, r: 4 };
-}
+export const BTS_CANVAS = { w: 100, h: 50 }; // יחידות הקנבס של הקולאז'
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const bts: BtsItem[] = ((data as any).bts ?? []).map((x: unknown) =>
-  typeof x === "string" ? { src: x, size: "m" } : (x as BtsItem)
-);
+export const bts: BtsItem[] = ((data as any).bts ?? []).map((x: unknown, i: number) => {
+  const b = (typeof x === "string" ? { src: x } : x) as BtsItem;
+  return {
+    ratio: 1.5,
+    x: b.x ?? (i % 3) * 33 + 2,
+    y: b.y ?? Math.floor(i / 3) * 25 + 2,
+    w: b.w ?? 22,
+    ...b,
+  };
+});
 
-/** Accepts a plain video ID or any YouTube URL and returns the ID. */
 export function ytId(v?: string): string {
   if (!v) return "";
   const m = v.match(/(?:youtu\.be\/|v=|shorts\/|embed\/)([A-Za-z0-9_-]{11})/);

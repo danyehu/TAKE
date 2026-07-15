@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { dict, type Lang } from "@/lib/i18n";
-import { sessions, links, bts, btsSpan, buttons, resolveBtnUrl, ytId, type Session, type Btn } from "@/lib/content";
+import { sessions, links, bts, BTS_CANVAS, buttons, resolveBtnUrl, ytId, type Session, type Btn } from "@/lib/content";
 import { getLatestVideo } from "@/lib/latest";
 import { ContactForm, Diamonds, MobileMenu, Reveal, YouTube } from "@/components/ui";
 
@@ -272,22 +272,31 @@ export async function Home({ lang }: { lang: Lang }) {
                   <img key={b.src} src={b.src} alt="" loading="lazy" className="w-full break-inside-avoid border hairline" />
                 ))}
               </div>
-              {/* דסקטופ: מונטאז' לפי פורמט התמונה והגודל שנבחר */}
-              <div className="hidden auto-rows-[7.2vw] grid-flow-dense grid-cols-12 gap-4 sm:grid">
-                {bts.map((b) => {
-                  const { c, r } = btsSpan(b);
+              {/* דסקטופ: קולאז' חופשי לפי המיקומים מהסטודיו */}
+              <div
+                className="relative hidden w-full sm:block"
+                style={{ aspectRatio: `${BTS_CANVAS.w} / ${BTS_CANVAS.h}` }}
+              >
+                {bts.map((b, i) => {
+                  const h = (b.w! / (b.ratio ?? 1.5));
                   return (
                     <div
-                      key={b.src}
-                      style={{ gridColumn: `span ${c}`, gridRow: `span ${r}` }}
-                      className="relative overflow-hidden border hairline"
+                      key={b.src + i}
+                      className="absolute overflow-hidden border hairline shadow-[0_18px_50px_rgba(0,0,0,0.5)]"
+                      style={{
+                        left: `${b.x}%`,
+                        top: `${(b.y! / BTS_CANVAS.h) * 100}%`,
+                        width: `${b.w}%`,
+                        height: `${(h / BTS_CANVAS.h) * 100}%`,
+                        zIndex: i + 1,
+                      }}
                     >
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={b.src}
                         alt=""
                         loading="lazy"
-                        className="absolute inset-0 h-full w-full object-cover opacity-85 transition duration-700 hover:scale-[1.02] hover:opacity-100"
+                        className="absolute inset-0 h-full w-full object-cover opacity-90 transition duration-700 hover:scale-[1.02] hover:opacity-100"
                       />
                     </div>
                   );

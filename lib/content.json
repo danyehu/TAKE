@@ -236,28 +236,38 @@
   "bts": [
     {
       "src": "/bts/01.jpg",
-      "size": "m",
-      "ratio": 0.667
+      "ratio": 0.667,
+      "x": 33,
+      "y": 5,
+      "w": 16
     },
     {
       "src": "/bts/02.jpg",
-      "size": "m",
-      "ratio": 1.5
+      "ratio": 1.5,
+      "x": 1,
+      "y": 2,
+      "w": 30
     },
     {
       "src": "/bts/04.jpg",
-      "size": "m",
-      "ratio": 0.667
+      "ratio": 0.667,
+      "x": 83,
+      "y": 4,
+      "w": 15
     },
     {
       "src": "/bts/05.jpg",
-      "size": "m",
-      "ratio": 1.5
+      "ratio": 1.5,
+      "x": 51,
+      "y": 1,
+      "w": 30
     },
     {
       "src": "/bts/06.jpg",
-      "size": "m",
-      "ratio": 1.5
+      "ratio": 1.5,
+      "x": 33,
+      "y": 30,
+      "w": 28
     }
   ],
   "buttons": {

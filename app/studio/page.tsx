@@ -108,6 +108,140 @@ function Field({
   return null;
 }
 
+
+/* עורך קולאז' חופשי — גרירה, שינוי גודל ושכבות, כמו קנבה */
+type CanvasItem = { src: string; ratio?: number; x?: number; y?: number; w?: number };
+const CANVAS = { w: 100, h: 50 };
+
+function CollageCanvas({
+  items,
+  onChange,
+}: {
+  items: CanvasItem[];
+  onChange: (next: CanvasItem[]) => void;
+}) {
+  const boxRef = useRef<HTMLDivElement>(null);
+  const [sel, setSel] = useState<number | null>(null);
+  const drag = useRef<{ mode: "move" | "resize"; i: number; sx: number; sy: number; ox: number; oy: number; ow: number } | null>(null);
+
+  function unit() {
+    const r = boxRef.current!.getBoundingClientRect();
+    return r.width / CANVAS.w; // פיקסלים ליחידת קנבס
+  }
+
+  function down(e: React.PointerEvent, i: number, mode: "move" | "resize") {
+    e.preventDefault();
+    e.stopPropagation();
+    setSel(i);
+    const b = items[i];
+    drag.current = { mode, i, sx: e.clientX, sy: e.clientY, ox: b.x ?? 0, oy: b.y ?? 0, ow: b.w ?? 20 };
+    window.addEventListener("pointermove", move);
+    window.addEventListener("pointerup", up);
+  }
+
+  function move(e: PointerEvent) {
+    const d = drag.current;
+    if (!d) return;
+    const u = unit();
+    const dx = (e.clientX - d.sx) / u;
+    const dy = (e.clientY - d.sy) / u;
+    const b = items[d.i];
+    const ratio = b.ratio ?? 1.5;
+    let next: CanvasItem;
+    if (d.mode === "move") {
+      const w = b.w ?? 20;
+      const h = w / ratio;
+      next = {
+        ...b,
+        x: Math.min(Math.max(d.ox + dx, -w * 0.4), CANVAS.w - w * 0.6),
+        y: Math.min(Math.max(d.oy + dy, -h * 0.4), CANVAS.h - h * 0.3),
+      };
+    } else {
+      const w = Math.min(Math.max(d.ow + dx, 6), CANVAS.w);
+      next = { ...b, w };
+    }
+    onChange(items.map((x, j) => (j === d.i ? next : x)));
+  }
+
+  function up() {
+    drag.current = null;
+    window.removeEventListener("pointermove", move);
+    window.removeEventListener("pointerup", up);
+  }
+
+  function layer(i: number, dir: 1 | -1) {
+    const j = i + dir;
+    if (j < 0 || j >= items.length) return;
+    const next = [...items];
+    [next[i], next[j]] = [next[j], next[i]];
+    onChange(next);
+    setSel(j);
+  }
+
+  return (
+    <div>
+      <p className="mb-2 text-[0.6rem] uppercase tracking-[0.25em] text-[var(--muted)]">
+        ● גרור להזזה · פינה שמאלית-תחתונה לשינוי גודל · לחיצה בוחרת
+      </p>
+      <div
+        ref={boxRef}
+        dir="ltr"
+        onPointerDown={() => setSel(null)}
+        className="relative w-full touch-none overflow-hidden rounded-xl border border-dashed border-[var(--ink)]/25 bg-[var(--bg)]"
+        style={{ aspectRatio: `${CANVAS.w} / ${CANVAS.h}` }}
+      >
+        {items.map((b, i) => {
+          const w = b.w ?? 20;
+          const h = w / (b.ratio ?? 1.5);
+          return (
+            <div
+              key={b.src + i}
+              onPointerDown={(e) => down(e, i, "move")}
+              className={`absolute cursor-grab overflow-hidden border active:cursor-grabbing ${
+                sel === i ? "border-[var(--ink)] shadow-[0_0_0_1px_var(--ink)]" : "border-white/10"
+              }`}
+              style={{
+                left: `${b.x}%`,
+                top: `${((b.y ?? 0) / CANVAS.h) * 100}%`,
+                width: `${w}%`,
+                height: `${(h / CANVAS.h) * 100}%`,
+                zIndex: i + 1,
+              }}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={b.src} alt="" draggable={false} className="pointer-events-none absolute inset-0 h-full w-full object-cover" />
+              {sel === i && (
+                <div
+                  onPointerDown={(e) => down(e, i, "resize")}
+                  className="absolute bottom-0 left-0 h-5 w-5 cursor-nesw-resize border-t border-r border-[var(--ink)] bg-[var(--bg)]"
+                  title="שינוי גודל"
+                />
+              )}
+            </div>
+          );
+        })}
+      </div>
+      {sel !== null && items[sel] && (
+        <div className="mt-3 flex items-center gap-2">
+          <button className="rounded-lg border border-[var(--line)] px-3 py-1.5 text-xs hover:border-[var(--ink)]" onClick={() => layer(sel, 1)}>שכבה קדימה ↑</button>
+          <button className="rounded-lg border border-[var(--line)] px-3 py-1.5 text-xs hover:border-[var(--ink)]" onClick={() => layer(sel, -1)}>שכבה אחורה ↓</button>
+          <button
+            className="rounded-lg border border-red-500/40 px-3 py-1.5 text-xs text-red-400"
+            onClick={() => {
+              if (confirm("להסיר את התמונה מהקולאז'?")) {
+                onChange(items.filter((_, j) => j !== sel));
+                setSel(null);
+              }
+            }}
+          >
+            הסרת תמונה ✕
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
 const SECTION_LABELS: Record<string, string> = {
   nav: "תפריט ניווט",
   hero: "מסך פתיחה (Hero)",
@@ -431,19 +565,12 @@ export default function Studio() {
   /* ---------- מסך עריכה ---------- */
   const links = content.links as Json;
   const sessions = content.sessions as Json[];
-  const btsList = ((content.bts as Json[]) ?? []) as { src: string; size?: string }[];
+  const btsList = ((content.bts as Json[]) ?? []) as CanvasItem[];
 
-  function setBts(next: { src: string; size?: string }[]) {
+  function setBts(next: CanvasItem[]) {
     setContent({ ...content, bts: next });
   }
 
-  function moveBts(i: number, dir: -1 | 1) {
-    const j = i + dir;
-    if (j < 0 || j >= btsList.length) return;
-    const next = [...btsList];
-    [next[i], next[j]] = [next[j], next[i]];
-    setBts(next);
-  }
 
   async function uploadImage(file: File) {
     setBusy(true);
@@ -467,7 +594,7 @@ export default function Studio() {
       });
       if (!res.ok) throw new Error(await res.text());
       const { path } = await res.json();
-      setBts([...btsList, { src: path, size: "m", ratio: Math.round((img.width / img.height) * 100) / 100 } as { src: string; size?: string }]);
+      setBts([...btsList, { src: path, ratio: Math.round((img.width / img.height) * 100) / 100, x: 38, y: 14, w: 22 } as { src: string }]);
       setMsg("התמונה הועלתה! עכשיו לחץ \"שמור ופרסם\" כדי שתופיע באתר.");
       setSaved(true);
     } catch {
@@ -577,63 +704,16 @@ export default function Studio() {
       <h2 className="label mb-3 mt-14">גלריית מאחורי הקלעים</h2>
       <div className={cardCls}>
         <p className="mb-4 text-xs text-[var(--muted)]">
-          סדר, גודל בפריים, הוספה ומחיקה. שינויים נשמרים רק אחרי "שמור ופרסם".
+          קולאז' חופשי — בדיוק כפי שייראה באתר. שינויים נשמרים רק אחרי "שמור ופרסם".
         </p>
-
-        {/* תצוגה מקדימה חיה של המונטאז' כפי שייראה באתר */}
-        {btsList.length > 0 && (
-          <div className="mb-6 rounded-xl border border-dashed border-[var(--ink)]/25 bg-[var(--bg)] p-4">
-            <p className="mb-3 text-[0.6rem] uppercase tracking-[0.25em] text-[var(--muted)]">
-              ● תצוגה מקדימה — ככה המונטאז' נראה באתר, מתעדכן בזמן אמת
-            </p>
-            <div dir="ltr" className="grid auto-rows-[48px] grid-flow-dense grid-cols-12 gap-2">
-              {btsList.map((b, i) => {
-                const ratio = (b as { ratio?: number }).ratio ?? 1.5;
-                const size = b.size ?? "m";
-                const portrait = ratio < 0.9;
-                const [c, r] = portrait
-                  ? size === "s" ? [3, 5] : size === "l" ? [6, 9] : [4, 6]
-                  : size === "s" ? [4, 3] : size === "l" ? [8, 6] : [6, 4];
-                return (
-                  <div key={b.src + i} style={{ gridColumn: `span ${c}`, gridRow: `span ${r}` }} className="relative overflow-hidden rounded-sm border border-[var(--line)]">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={b.src} alt="" className="absolute inset-0 h-full w-full object-cover" />
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-          {btsList.map((b, i) => (
-            <div key={b.src + i} className="rounded-xl border border-[var(--line)] p-3">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={b.src} alt="" className="h-32 w-full rounded-lg object-cover" />
-              <div className="mt-3 flex items-center justify-between gap-2">
-                <select
-                  className="rounded-lg border border-[var(--line)] bg-transparent px-2 py-1.5 text-xs text-[var(--ink)]"
-                  value={b.size ?? "m"}
-                  onChange={(e) => setBts(btsList.map((x, j) => (j === i ? { ...x, size: e.target.value } : x)))}
-                >
-                  <option value="s">קטן</option>
-                  <option value="m">בינוני</option>
-                  <option value="l">גדול (רוחב)</option>
-                </select>
-                <div className="flex items-center gap-1.5">
-                  <button title="הקדם" className="rounded-lg border border-[var(--line)] px-2.5 py-1.5 text-xs hover:border-[var(--ink)]" onClick={() => moveBts(i, -1)}>→</button>
-                  <button title="אחרה" className="rounded-lg border border-[var(--line)] px-2.5 py-1.5 text-xs hover:border-[var(--ink)]" onClick={() => moveBts(i, 1)}>←</button>
-                  <button className="rounded-lg border border-red-500/40 px-2.5 py-1.5 text-xs text-red-400 hover:border-red-400" onClick={() => { if (confirm("להסיר את התמונה מהגלריה?")) setBts(btsList.filter((_, j) => j !== i)); }}>✕</button>
-                </div>
-              </div>
-            </div>
-          ))}
+        <CollageCanvas items={btsList} onChange={setBts} />
+        <div className="mt-4 flex items-center gap-3">
           <button
-            className="flex h-full min-h-44 flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-[var(--line)] text-sm text-[var(--muted)] transition hover:border-[var(--ink)] hover:text-[var(--ink)]"
+            className="rounded-full border border-dashed border-[var(--line)] px-5 py-2.5 text-sm text-[var(--muted)] transition hover:border-[var(--ink)] hover:text-[var(--ink)]"
             onClick={() => fileRef.current?.click()}
             disabled={busy}
           >
-            <span className="text-2xl">+</span>
-            {busy ? "מעלה..." : "העלאת תמונה"}
+            {busy ? "מעלה..." : "+ העלאת תמונה"}
           </button>
           <input
             ref={fileRef}
@@ -644,77 +724,6 @@ export default function Studio() {
           />
         </div>
       </div>
-
-      <h2 className="label mb-3 mt-14">כפתורים</h2>
-      {(() => {
-        const btnGroups = (content.buttons as Record<string, Json[]>) ?? {};
-        const GROUP_LABELS: Record<string, string> = {
-          hero: "מסך פתיחה (Hero)",
-          artists: "אזור לאמנים",
-          footer: "קישורי פוטר (רשתות)",
-        };
-        const HINT =
-          'יעד הכפתור: כתובת מלאה (https://...), עוגן בעמוד (#sessions), או קיצור: @latest = הסרטון האחרון, @email = מייל, @youtube / @instagram / @appleArtist / @spotifyArtist = מהקישורים הכלליים';
-        function setGroup(g: string, next: Json[]) {
-          setContent({ ...content, buttons: { ...btnGroups, [g]: next } });
-        }
-        return (
-          <div className={cardCls}>
-            <p className="mb-4 text-xs leading-relaxed text-[var(--muted)]">{HINT}</p>
-            {Object.entries(GROUP_LABELS).map(([g, gl]) => {
-              const list = btnGroups[g] ?? [];
-              return (
-                <details key={g} className="mb-3 rounded-xl border border-[var(--line)] p-4">
-                  <summary className="cursor-pointer text-sm text-[var(--muted)]">{gl}</summary>
-                  <div className="mt-3 space-y-3">
-                    {list.map((b, i) => (
-                      <div key={i} className="rounded-lg border border-[var(--line)] p-3">
-                        <div className="grid gap-2 sm:grid-cols-2">
-                          <label className="block">
-                            <span className={labelCls}>טקסט — עברית</span>
-                            <input className={inputCls} dir="rtl" value={String(b.labelHe ?? "")} onChange={(e) => setGroup(g, list.map((x, j) => (j === i ? { ...x, labelHe: e.target.value } : x)))} />
-                          </label>
-                          <label className="block">
-                            <span className={labelCls}>טקסט — אנגלית</span>
-                            <input className={inputCls} dir="ltr" value={String(b.labelEn ?? "")} onChange={(e) => setGroup(g, list.map((x, j) => (j === i ? { ...x, labelEn: e.target.value } : x)))} />
-                          </label>
-                        </div>
-                        <label className="block">
-                          <span className={labelCls}>יעד</span>
-                          <input className={inputCls} dir="ltr" value={String(b.url ?? "")} onChange={(e) => setGroup(g, list.map((x, j) => (j === i ? { ...x, url: e.target.value } : x)))} />
-                        </label>
-                        <div className="mt-3 flex items-center justify-between">
-                          {g !== "footer" ? (
-                            <select
-                              className="rounded-lg border border-[var(--line)] bg-transparent px-2 py-1.5 text-xs text-[var(--ink)]"
-                              value={String(b.style ?? "primary")}
-                              onChange={(e) => setGroup(g, list.map((x, j) => (j === i ? { ...x, style: e.target.value } : x)))}
-                            >
-                              <option value="primary">מלא (ראשי)</option>
-                              <option value="ghost">מתאר (משני)</option>
-                            </select>
-                          ) : <span />}
-                          <div className="flex gap-1.5">
-                            <button title="הקדם" className="rounded-lg border border-[var(--line)] px-2.5 py-1.5 text-xs hover:border-[var(--ink)]" onClick={() => { if (i > 0) { const n = [...list]; [n[i - 1], n[i]] = [n[i], n[i - 1]]; setGroup(g, n); } }}>→</button>
-                            <button title="אחרה" className="rounded-lg border border-[var(--line)] px-2.5 py-1.5 text-xs hover:border-[var(--ink)]" onClick={() => { if (i < list.length - 1) { const n = [...list]; [n[i + 1], n[i]] = [n[i], n[i + 1]]; setGroup(g, n); } }}>←</button>
-                            <button className="rounded-lg border border-red-500/40 px-2.5 py-1.5 text-xs text-red-400" onClick={() => { if (confirm("להסיר את הכפתור?")) setGroup(g, list.filter((_, j) => j !== i)); }}>✕</button>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                    <button
-                      className="rounded-full border border-dashed border-[var(--line)] px-5 py-2 text-sm text-[var(--muted)] hover:border-[var(--ink)] hover:text-[var(--ink)]"
-                      onClick={() => setGroup(g, [...list, { labelHe: "כפתור חדש", labelEn: "New button", url: "#", ...(g !== "footer" ? { style: "ghost" } : {}) }])}
-                    >
-                      + כפתור חדש
-                    </button>
-                  </div>
-                </details>
-              );
-            })}
-          </div>
-        );
-      })()}
 
       {content.texts ? (
         <>
