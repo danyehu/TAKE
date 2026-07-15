@@ -242,15 +242,15 @@ export async function Home({ lang }: { lang: Lang }) {
             </Reveal>
           </div>
           <Reveal className="mt-12">
-            <div dir="ltr" className="flex snap-x snap-mandatory gap-4 overflow-x-auto px-6 pb-6 [scrollbar-width:thin] sm:px-12">
-              {bts.map((src, i) => (
+            <div dir="ltr" className="columns-2 gap-3 px-6 sm:columns-3 sm:gap-4 sm:px-12 [&>img]:mb-3 sm:[&>img]:mb-4">
+              {bts.map((src) => (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   key={src}
                   src={src}
                   alt=""
                   loading="lazy"
-                  className={`${i % 2 === 0 ? "h-[420px]" : "h-[360px] self-end"} w-auto shrink-0 snap-center border hairline object-cover opacity-85 transition duration-700 hover:scale-[1.015] hover:opacity-100 sm:${i % 2 === 0 ? "h-[520px]" : "h-[440px]"}`}
+                  className="w-full break-inside-avoid border hairline object-cover opacity-85 transition duration-700 hover:opacity-100"
                 />
               ))}
             </div>
