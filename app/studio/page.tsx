@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { Diamonds } from "@/components/ui";
 
 /* ------------------------------------------------------------------
    TAKE Studio — מסך ניהול תוכן
-   מוגן בסיסמה (ADMIN_PASSWORD). שמירה מבצעת commit לגיטהאב,
-   ו-Vercel מפרסם את האתר המעודכן אוטומטית תוך כדקה.
+   שמירה מבצעת עדכון בגיטהאב, והאתר מתפרסם מחדש אוטומטית תוך כדקה.
 ------------------------------------------------------------------- */
 
 type Json = Record<string, unknown>;
@@ -16,9 +16,9 @@ const FIELD_LABELS: Record<string, string> = {
   appleArtist: "עמוד אמן באפל מיוזיק",
   spotifyArtist: "עמוד אמן בספוטיפיי",
   email: "אימייל ליצירת קשר",
-  youtubeChannelId: "מזהה ערוץ יוטיוב (לסרטון האחרון)",
-  slug: "כתובת העמוד (באנגלית, ללא רווחים)",
-  status: "סטטוס (released / coming-soon)",
+  youtubeChannelId: "מזהה ערוץ יוטיוב (לסרטון האחרון בדף הבית)",
+  slug: "כתובת העמוד (אנגלית, ללא רווחים)",
+  status: "סטטוס",
   artistEn: "שם האמן — אנגלית",
   artistHe: "שם האמן — עברית",
   titleEn: "כותרת — אנגלית",
@@ -33,9 +33,13 @@ const FIELD_LABELS: Record<string, string> = {
   descriptionHe: "תיאור — עברית",
 };
 
-function label(key: string) {
-  return FIELD_LABELS[key] ?? key;
-}
+const inputCls =
+  "w-full rounded-lg border border-[var(--line)] bg-white/[0.04] px-3.5 py-2.5 text-sm text-[var(--ink)] outline-none transition focus:border-[var(--ink)]/60 focus:bg-white/[0.07]";
+const labelCls = "mb-1.5 mt-4 block text-xs text-[var(--muted)]";
+const btnCls =
+  "rounded-full bg-[var(--ink)] px-7 py-2.5 text-sm font-medium text-[var(--bg)] transition hover:opacity-85 disabled:opacity-40";
+const cardCls =
+  "mb-5 rounded-2xl border border-[var(--line)] bg-white/[0.02] p-6";
 
 function Field({
   k,
@@ -46,29 +50,54 @@ function Field({
   value: unknown;
   onChange: (v: unknown) => void;
 }) {
+  const label = FIELD_LABELS[k] ?? k;
+  if (k === "status") {
+    return (
+      <label className="block">
+        <span className={labelCls}>{label}</span>
+        <select
+          className={inputCls}
+          value={String(value)}
+          onChange={(e) => onChange(e.target.value)}
+        >
+          <option value="released">פורסם (מוצג באתר עם עמוד מלא)</option>
+          <option value="coming-soon">בקרוב (כרטיס טיזר בלבד)</option>
+        </select>
+      </label>
+    );
+  }
   if (Array.isArray(value) && value.every((x) => typeof x === "string")) {
     return (
       <label className="block">
-        <span className="lbl">{label(k)}</span>
+        <span className={labelCls}>{label}</span>
         <input
-          className="inp"
+          className={inputCls}
+          dir="ltr"
           value={(value as string[]).join(", ")}
-          onChange={(e) => onChange(e.target.value.split(",").map((s) => s.trim()).filter(Boolean))}
+          onChange={(e) =>
+            onChange(e.target.value.split(",").map((s) => s.trim()).filter(Boolean))
+          }
         />
       </label>
     );
   }
   if (typeof value === "string") {
-    const long = value.length > 80 || k.startsWith("description");
+    const long = value.length > 90 || k.startsWith("description");
+    const rtl = /He$/.test(k) || k === "artistHe" || k === "titleHe";
     return (
       <label className="block">
-        <span className="lbl">{label(k)}</span>
+        <span className={labelCls}>{label}</span>
         {long ? (
-          <textarea className="inp min-h-24" value={value} onChange={(e) => onChange(e.target.value)} />
+          <textarea
+            className={`${inputCls} min-h-24`}
+            dir={rtl ? "rtl" : "ltr"}
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+          />
         ) : (
           <input
-            className="inp"
-            dir={/He$|^artistHe|^titleHe/.test(k) ? "rtl" : "ltr"}
+            className={inputCls}
+            dir={rtl ? "rtl" : "ltr"}
             value={value}
             onChange={(e) => onChange(e.target.value)}
           />
@@ -101,74 +130,129 @@ export default function Studio() {
   const [content, setContent] = useState<Json | null>(null);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
+  const [saved, setSaved] = useState(false);
 
-  async function load() {
-    setBusy(true);
-    setMsg("");
-    const res = await fetch("/api/admin", { headers: { "x-admin-password": password } });
-    setBusy(false);
-    if (!res.ok) {
-      setMsg(res.status === 401 ? "סיסמה שגויה" : "שגיאה בטעינה — בדוק שהמשתנים מוגדרים בורסל");
+  async function login(e?: React.FormEvent) {
+    e?.preventDefault();
+    const form = e?.target as HTMLFormElement | undefined;
+    const pw =
+      password ||
+      (form ? String(new FormData(form).get("password") ?? "") : "");
+    if (!pw) {
+      setMsg("הקלד סיסמה");
       return;
     }
-    const data = await res.json();
-    setContent(data.content);
+    setPassword(pw);
+    setBusy(true);
+    setMsg("");
+    try {
+      const res = await fetch("/api/admin", { headers: { "x-admin-password": pw } });
+      if (!res.ok) {
+        setMsg(res.status === 401 ? "סיסמה שגויה" : "שגיאה בטעינה — נסה שוב או פנה לדן");
+        return;
+      }
+      const data = await res.json();
+      setContent(data.content);
+    } catch {
+      setMsg("שגיאת רשת — בדוק חיבור ונסה שוב");
+    } finally {
+      setBusy(false);
+    }
   }
 
   async function save() {
     setBusy(true);
     setMsg("");
-    const res = await fetch("/api/admin", {
-      method: "POST",
-      headers: { "x-admin-password": password, "content-type": "application/json" },
-      body: JSON.stringify({ content }),
-    });
-    setBusy(false);
-    setMsg(res.ok ? "נשמר! האתר יתעדכן תוך כדקה." : "שגיאה בשמירה: " + (await res.text()));
+    setSaved(false);
+    try {
+      const res = await fetch("/api/admin", {
+        method: "POST",
+        headers: { "x-admin-password": password, "content-type": "application/json" },
+        body: JSON.stringify({ content }),
+      });
+      if (res.ok) {
+        setSaved(true);
+        setMsg("נשמר ופורסם! האתר יתעדכן תוך כדקה.");
+      } else {
+        setMsg("שגיאה בשמירה — נסה שוב");
+      }
+    } catch {
+      setMsg("שגיאת רשת — השינויים לא נשמרו");
+    } finally {
+      setBusy(false);
+    }
   }
 
+  /* ---------- מסך כניסה ---------- */
   if (!content) {
     return (
-      <main dir="rtl" className="studio mx-auto flex min-h-svh max-w-sm flex-col justify-center gap-4 px-6">
-        <h1 className="text-2xl font-bold">TAKE Studio</h1>
-        <p className="text-sm opacity-60">מסך ניהול התוכן של האתר</p>
-        <input
-          className="inp"
-          type="password"
-          placeholder="סיסמה"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && load()}
-        />
-        <button className="btn2" onClick={load} disabled={busy || !password}>
-          {busy ? "..." : "כניסה"}
-        </button>
+      <main className="mx-auto flex min-h-svh w-full max-w-sm flex-col items-center justify-center gap-6 px-6 text-center">
+        <Diamonds className="h-7 w-auto text-[var(--ink)]" />
+        <div>
+          <h1 className="display text-4xl tracking-wide">TAKE Studio</h1>
+          <p className="mt-2 text-sm text-[var(--muted)]">מסך ניהול התוכן של האתר</p>
+        </div>
+        <form onSubmit={login} className="flex w-full flex-col gap-3">
+          <input
+            className={`${inputCls} text-center`}
+            type="password"
+            name="password"
+            placeholder="סיסמה"
+            autoComplete="current-password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <button type="submit" className={btnCls} disabled={busy}>
+            {busy ? "רגע..." : "כניסה"}
+          </button>
+        </form>
         {msg && <p className="text-sm text-red-400">{msg}</p>}
-        <style jsx global>{studioCss}</style>
       </main>
     );
   }
 
+  /* ---------- מסך עריכה ---------- */
   const links = content.links as Json;
   const sessions = content.sessions as Json[];
 
   return (
-    <main dir="rtl" className="studio mx-auto max-w-3xl px-6 py-12">
-      <div className="mb-10 flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">TAKE Studio</h1>
-          <p className="text-sm opacity-60">עריכה → שמירה → האתר מתעדכן לבד תוך כדקה</p>
+    <main className="mx-auto w-full max-w-3xl px-6 pb-32 pt-10">
+      <header className="mb-10 flex flex-wrap items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <Diamonds className="h-5 w-auto text-[var(--ink)]" />
+          <div>
+            <h1 className="display text-2xl">TAKE Studio</h1>
+            <p className="text-xs text-[var(--muted)]">
+              עריכה ← שמירה ← האתר מתעדכן לבד תוך כדקה
+            </p>
+          </div>
         </div>
-        <button className="btn2" onClick={save} disabled={busy}>
+        <button className={btnCls} onClick={save} disabled={busy}>
           {busy ? "שומר..." : "שמור ופרסם"}
         </button>
-      </div>
-      {msg && <p className="mb-6 rounded-lg border border-current px-4 py-3 text-sm">{msg}</p>}
+      </header>
 
-      <h2 className="sect">קישורים כלליים</h2>
-      <div className="card">
+      {msg && (
+        <p
+          className={`mb-6 rounded-xl border px-4 py-3 text-sm ${
+            saved
+              ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-300"
+              : "border-red-500/40 bg-red-500/10 text-red-300"
+          }`}
+        >
+          {msg}
+        </p>
+      )}
+
+      <h2 className="label mb-3 mt-10">קישורים כלליים</h2>
+      <div className={cardCls}>
         {Object.entries(links).map(([k, v]) => (
-          <Field key={k} k={k} value={v} onChange={(nv) => setContent({ ...content, links: { ...links, [k]: nv } })} />
+          <Field
+            key={k}
+            k={k}
+            value={v}
+            onChange={(nv) => setContent({ ...content, links: { ...links, [k]: nv } })}
+          />
         ))}
         <Field
           k="youtubeChannelId"
@@ -177,19 +261,32 @@ export default function Studio() {
         />
       </div>
 
-      <h2 className="sect">סשנים</h2>
+      <div className="mb-3 mt-12 flex items-center justify-between">
+        <h2 className="label">סשנים</h2>
+        <button
+          className="rounded-full border border-[var(--line)] px-5 py-2 text-sm text-[var(--muted)] transition hover:border-[var(--ink)] hover:text-[var(--ink)]"
+          onClick={() =>
+            setContent({ ...content, sessions: [{ ...EMPTY_SESSION }, ...sessions] })
+          }
+        >
+          + סשן חדש
+        </button>
+      </div>
+
       {sessions.map((s, i) => (
-        <div className="card" key={i}>
-          <div className="mb-2 flex items-center justify-between">
-            <strong>{(s.artistHe as string) || (s.artistEn as string) || `סשן ${i + 1}`}</strong>
+        <div className={cardCls} key={i}>
+          <div className="mb-1 flex items-center justify-between">
+            <strong className="display text-lg">
+              {(s.artistHe as string) || (s.artistEn as string) || `סשן חדש`}
+            </strong>
             <button
-              className="text-sm text-red-400 hover:underline"
+              className="text-xs text-red-400/80 transition hover:text-red-400"
               onClick={() => {
-                if (confirm("למחוק את הסשן הזה?"))
+                if (confirm("למחוק את הסשן הזה מהאתר?"))
                   setContent({ ...content, sessions: sessions.filter((_, j) => j !== i) });
               }}
             >
-              מחיקה
+              מחיקת סשן
             </button>
           </div>
           {Object.entries(s).map(([k, v]) => (
@@ -205,25 +302,12 @@ export default function Studio() {
           ))}
         </div>
       ))}
-      <button
-        className="btn2"
-        onClick={() => setContent({ ...content, sessions: [{ ...EMPTY_SESSION }, ...sessions] })}
-      >
-        + סשן חדש
-      </button>
 
-      <style jsx global>{studioCss}</style>
+      <div className="mt-10 flex justify-end">
+        <button className={btnCls} onClick={save} disabled={busy}>
+          {busy ? "שומר..." : "שמור ופרסם"}
+        </button>
+      </div>
     </main>
   );
 }
-
-const studioCss = `
-  .studio { font-family: system-ui, sans-serif; }
-  .studio .lbl { display: block; font-size: 0.75rem; opacity: 0.6; margin: 0.8rem 0 0.25rem; }
-  .studio .inp { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15); border-radius: 0.5rem; padding: 0.55rem 0.8rem; font-size: 0.9rem; color: inherit; }
-  .studio .inp:focus { outline: none; border-color: rgba(255,255,255,0.5); }
-  .studio .btn2 { background: #f4f1ea; color: #0b0b0c; border-radius: 9999px; padding: 0.6rem 1.6rem; font-weight: 600; font-size: 0.9rem; }
-  .studio .btn2:disabled { opacity: 0.5; }
-  .studio .sect { font-size: 0.8rem; letter-spacing: 0.2em; opacity: 0.6; margin: 2.5rem 0 0.75rem; }
-  .studio .card { border: 1px solid rgba(255,255,255,0.12); border-radius: 1rem; padding: 1.25rem; margin-bottom: 1rem; background: rgba(255,255,255,0.02); }
-`;
