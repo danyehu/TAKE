@@ -125,6 +125,11 @@
       "footer": {
         "credit": "Created by Dan Yehuda · Filmed at HaMiffal, Jerusalem",
         "dist": "Music distributed through Universal Music Israel"
+      },
+      "bts": {
+        "label": "Behind the TAKE",
+        "title": "A glimpse into the room",
+        "p": "Before the first note — the cameras, the walls, the people and the quiet work that make a TAKE."
       }
     },
     "he": {
@@ -204,7 +209,20 @@
       "footer": {
         "credit": "נוצר על ידי דן יהודה · מצולם במפעל, ירושלים",
         "dist": "המוזיקה מופצת דרך Universal Music Israel"
+      },
+      "bts": {
+        "label": "מאחורי הקלעים",
+        "title": "הצצה אל תוך החדר",
+        "p": "רגע לפני הצליל הראשון — המצלמות, הקירות, האנשים והעבודה השקטה שמהם נולד טֵיְיק."
       }
     }
-  }
+  },
+  "bts": [
+    "/bts/01.jpg",
+    "/bts/02.jpg",
+    "/bts/03.jpg",
+    "/bts/04.jpg",
+    "/bts/05.jpg",
+    "/bts/06.jpg"
+  ]
 }

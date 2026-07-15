@@ -23,6 +23,8 @@ export const upcoming = sessions.filter((s) => s.status === "coming-soon");
 export const latest = released[0];
 export const links = data.links;
 export const youtubeChannelId = data.youtubeChannelId;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const bts: string[] = (data as any).bts ?? [];
 
 /** Accepts a plain video ID or any YouTube URL and returns the ID. */
 export function ytId(v?: string): string {

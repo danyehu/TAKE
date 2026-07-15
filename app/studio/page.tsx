@@ -119,6 +119,7 @@ const SECTION_LABELS: Record<string, string> = {
   artists: "לאמנים",
   contact: "צרו קשר",
   footer: "פוטר",
+  bts: "מאחורי הקלעים",
   kicker: "שורת פתיח קטנה",
   tagline: "המשפט הראשי",
   watch: "כפתור צפייה",

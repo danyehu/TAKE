@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { dict, type Lang } from "@/lib/i18n";
-import { sessions, links, ytId, type Session } from "@/lib/content";
+import { sessions, links, bts, ytId, type Session } from "@/lib/content";
 import { getLatestVideo } from "@/lib/latest";
 import { Diamonds, Reveal, YouTube } from "@/components/ui";
 
@@ -27,6 +27,9 @@ export function Nav({ lang }: { lang: Lang }) {
           </a>
           <a href={hrefFor(lang, "/") + "#space"} className="hidden transition hover:text-[var(--ink)] md:block">
             {t.nav.space}
+          </a>
+          <a href={hrefFor(lang, "/") + "#bts"} className="hidden transition hover:text-[var(--ink)] md:block">
+            {t.bts?.label}
           </a>
           <a href={hrefFor(lang, "/") + "#contact"} className="hidden transition hover:text-[var(--ink)] sm:block">
             {t.nav.contact}
@@ -226,6 +229,34 @@ export async function Home({ lang }: { lang: Lang }) {
           </Reveal>
         </div>
       </section>
+
+
+      {/* BEHIND THE SCENES */}
+      {bts.length > 0 && (
+        <section id="bts" className="overflow-hidden py-24 sm:py-32">
+          <div className="mx-auto max-w-6xl px-6">
+            <Reveal>
+              <p className="label">{t.bts.label}</p>
+              <h2 className="display mt-5 text-3xl sm:text-4xl">{t.bts.title}</h2>
+              <p className="mt-5 max-w-xl text-lg leading-relaxed text-[var(--muted)]">{t.bts.p}</p>
+            </Reveal>
+          </div>
+          <Reveal className="mt-12">
+            <div dir="ltr" className="flex snap-x snap-mandatory gap-4 overflow-x-auto px-6 pb-6 [scrollbar-width:thin] sm:px-12">
+              {bts.map((src, i) => (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  key={src}
+                  src={src}
+                  alt=""
+                  loading="lazy"
+                  className={`${i % 2 === 0 ? "h-[420px]" : "h-[360px] self-end"} w-auto shrink-0 snap-center border hairline object-cover opacity-85 transition duration-700 hover:scale-[1.015] hover:opacity-100 sm:${i % 2 === 0 ? "h-[520px]" : "h-[440px]"}`}
+                />
+              ))}
+            </div>
+          </Reveal>
+        </section>
+      )}
 
       {/* ARTISTS + CONTACT */}
       <section id="contact" className="mx-auto max-w-3xl px-6 py-24 text-center sm:py-32">
