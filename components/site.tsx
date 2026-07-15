@@ -2,7 +2,7 @@ import Link from "next/link";
 import { dict, type Lang } from "@/lib/i18n";
 import { sessions, links, bts, ytId, type Session } from "@/lib/content";
 import { getLatestVideo } from "@/lib/latest";
-import { Diamonds, Reveal, YouTube } from "@/components/ui";
+import { Diamonds, MobileMenu, Reveal, YouTube } from "@/components/ui";
 
 const hrefFor = (lang: Lang, path: string) =>
   lang === "he" ? `/he${path}` : path || "/";
@@ -34,9 +34,20 @@ export function Nav({ lang }: { lang: Lang }) {
           <a href={hrefFor(lang, "/") + "#contact"} className="hidden transition hover:text-[var(--ink)] sm:block">
             {t.nav.contact}
           </a>
-          <a href={t.switchHref} className="border hairline px-3 py-1.5 transition hover:border-[var(--ink)] hover:text-[var(--ink)]">
+          <a href={t.switchHref} className="hidden border hairline px-3 py-1.5 transition hover:border-[var(--ink)] hover:text-[var(--ink)] sm:block">
             {t.switchLabel}
           </a>
+          <MobileMenu
+            switchHref={t.switchHref}
+            switchLabel={t.switchLabel}
+            links={[
+              { href: hrefFor(lang, "/") + "#sessions", label: t.nav.sessions },
+              { href: hrefFor(lang, "/") + "#about", label: t.nav.about },
+              { href: hrefFor(lang, "/") + "#space", label: t.nav.space },
+              { href: hrefFor(lang, "/") + "#bts", label: t.bts?.label },
+              { href: hrefFor(lang, "/") + "#contact", label: t.nav.contact },
+            ]}
+          />
         </nav>
       </div>
     </header>
@@ -142,17 +153,17 @@ export async function Home({ lang }: { lang: Lang }) {
               href={`https://www.youtube.com/watch?v=${latestVideo.id}`}
               target="_blank"
               rel="noreferrer"
-              className="pill"
+              className="pill max-w-[90vw]"
             >
-              <span className="h-1.5 w-1.5 rounded-full bg-[var(--ink)]" />
-              {t.latest} — {latestVideo.title}
+              <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--ink)]" />
+              <span className="truncate">{t.latest} — {latestVideo.title}</span>
             </a>
           </Reveal>
           <Reveal delay={200}>
             <p className="label">{t.hero.kicker}</p>
           </Reveal>
           <Reveal delay={300}>
-            <h1 className="display max-w-4xl text-5xl leading-[1.08] sm:text-7xl">
+            <h1 className="display max-w-4xl text-4xl leading-[1.1] sm:text-7xl">
               {t.hero.tagline}
             </h1>
           </Reveal>
@@ -301,7 +312,7 @@ export function SessionView({ s, lang }: { s: Session; lang: Lang }) {
       <div className="mt-10 flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="label">TAKE — Live Session</p>
-          <h1 className="display mt-3 text-4xl sm:text-6xl">{artist}</h1>
+          <h1 className="display mt-3 text-3xl sm:text-6xl">{artist}</h1>
           <p className="mt-3 text-xl text-[var(--muted)]">{title}</p>
         </div>
         {s.date && (

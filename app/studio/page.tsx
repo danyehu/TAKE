@@ -578,6 +578,32 @@ export default function Studio() {
         <p className="mb-4 text-xs text-[var(--muted)]">
           סדר, גודל בפריים, הוספה ומחיקה. שינויים נשמרים רק אחרי "שמור ופרסם".
         </p>
+
+        {/* תצוגה מקדימה חיה של המונטאז' כפי שייראה באתר */}
+        {btsList.length > 0 && (
+          <div className="mb-6 rounded-xl border border-dashed border-[var(--ink)]/25 bg-[var(--bg)] p-4">
+            <p className="mb-3 text-[0.6rem] uppercase tracking-[0.25em] text-[var(--muted)]">
+              ● תצוגה מקדימה — ככה המונטאז' נראה באתר, מתעדכן בזמן אמת
+            </p>
+            <div dir="ltr" className="grid auto-rows-[52px] grid-flow-dense grid-cols-6 gap-2">
+              {btsList.map((b, i) => {
+                const size = b.size ?? "m";
+                const cls =
+                  size === "l"
+                    ? "col-span-4 row-span-3"
+                    : size === "s"
+                    ? "col-span-2 row-span-2"
+                    : "col-span-2 row-span-3";
+                return (
+                  <div key={b.src + i} className={`relative overflow-hidden rounded-sm border border-[var(--line)] ${cls}`}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={b.src} alt="" className="absolute inset-0 h-full w-full object-cover" />
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
           {btsList.map((b, i) => (
             <div key={b.src + i} className="rounded-xl border border-[var(--line)] p-3">

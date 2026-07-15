@@ -103,3 +103,53 @@ export function YouTube({
     </div>
   );
 }
+
+/* תפריט מובייל — המבורגר עם שכבת ניווט מלאה */
+export function MobileMenu({
+  links,
+  switchHref,
+  switchLabel,
+}: {
+  links: { href: string; label: string }[];
+  switchHref: string;
+  switchLabel: string;
+}) {
+  const [open, setOpen] = useState(false);
+  useEffect(() => {
+    document.body.style.overflow = open ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [open]);
+  return (
+    <div className="sm:hidden">
+      <button
+        aria-label="Menu"
+        onClick={() => setOpen(!open)}
+        className="flex h-10 w-10 flex-col items-center justify-center gap-[5px]"
+      >
+        <span className={`h-px w-5 bg-[var(--ink)] transition duration-300 ${open ? "translate-y-[6px] rotate-45" : ""}`} />
+        <span className={`h-px w-5 bg-[var(--ink)] transition duration-300 ${open ? "opacity-0" : ""}`} />
+        <span className={`h-px w-5 bg-[var(--ink)] transition duration-300 ${open ? "-translate-y-[6px] -rotate-45" : ""}`} />
+      </button>
+      {open && (
+        <div className="fixed inset-0 top-[57px] z-30 flex flex-col items-center justify-center gap-8 bg-[rgba(11,11,12,0.97)] backdrop-blur-md">
+          <Diamonds className="h-6 w-auto text-[var(--muted)]" />
+          {links.map((l) => (
+            <a
+              key={l.href}
+              href={l.href}
+              onClick={() => setOpen(false)}
+              className="display text-3xl tracking-wide"
+            >
+              {l.label}
+            </a>
+          ))}
+          <a href={switchHref} className="mt-4 border border-[var(--line)] px-6 py-2.5 text-[0.72rem] uppercase tracking-[0.22em] text-[var(--muted)]">
+            {switchLabel}
+          </a>
+        </div>
+      )}
+    </div>
+  );
+}
