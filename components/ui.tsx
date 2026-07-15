@@ -172,12 +172,12 @@ export function SmoothScroll() {
       const startY = window.scrollY;
       const targetY = el.getBoundingClientRect().top + startY - 72;
       const dist = targetY - startY;
-      const dur = Math.min(1400, Math.max(700, Math.abs(dist) * 0.55));
+      const dur = Math.min(850, Math.max(450, Math.abs(dist) * 0.35));
       const t0 = performance.now();
       const ease = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
       function step(now: number) {
         const p = Math.min(1, (now - t0) / dur);
-        window.scrollTo(0, startY + dist * ease(p));
+        window.scrollTo({ top: startY + dist * ease(p), behavior: "instant" as ScrollBehavior });
         if (p < 1) requestAnimationFrame(step);
         else history.pushState(null, "", href.slice(hashIndex));
       }

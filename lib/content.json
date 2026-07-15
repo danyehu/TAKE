@@ -220,23 +220,69 @@
   "bts": [
     {
       "src": "/bts/01.jpg",
-      "size": "m"
+      "size": "m",
+      "ratio": 0.667
     },
     {
       "src": "/bts/02.jpg",
-      "size": "l"
+      "size": "m",
+      "ratio": 1.5
     },
     {
       "src": "/bts/04.jpg",
-      "size": "m"
+      "size": "m",
+      "ratio": 0.667
     },
     {
       "src": "/bts/05.jpg",
-      "size": "l"
+      "size": "m",
+      "ratio": 1.5
     },
     {
       "src": "/bts/06.jpg",
-      "size": "l"
+      "size": "m",
+      "ratio": 1.5
     }
-  ]
+  ],
+  "buttons": {
+    "hero": [
+      {
+        "labelEn": "Watch on YouTube",
+        "labelHe": "לצפייה ביוטיוב",
+        "url": "@latest",
+        "style": "primary"
+      },
+      {
+        "labelEn": "Explore sessions ↓",
+        "labelHe": "לכל הסשנים ↓",
+        "url": "#sessions",
+        "style": "ghost"
+      }
+    ],
+    "artists": [
+      {
+        "labelEn": "Get in touch",
+        "labelHe": "צרו קשר",
+        "url": "@email",
+        "style": "primary"
+      }
+    ],
+    "footer": [
+      {
+        "labelEn": "YouTube",
+        "labelHe": "יוטיוב",
+        "url": "@youtube"
+      },
+      {
+        "labelEn": "Instagram",
+        "labelHe": "אינסטגרם",
+        "url": "@instagram"
+      },
+      {
+        "labelEn": "Apple Music",
+        "labelHe": "אפל מיוזיק",
+        "url": "@appleArtist"
+      }
+    ]
+  }
 }

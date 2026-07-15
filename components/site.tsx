@@ -1,8 +1,22 @@
 import Link from "next/link";
 import { dict, type Lang } from "@/lib/i18n";
-import { sessions, links, bts, ytId, type Session } from "@/lib/content";
+import { sessions, links, bts, btsSpan, buttons, resolveBtnUrl, ytId, type Session, type Btn } from "@/lib/content";
 import { getLatestVideo } from "@/lib/latest";
 import { Diamonds, MobileMenu, Reveal, YouTube } from "@/components/ui";
+
+function BtnLink({ b, lang, latestId }: { b: Btn; lang: Lang; latestId?: string }) {
+  const url = resolveBtnUrl(b.url, latestId);
+  const external = url.startsWith("http") || url.startsWith("mailto");
+  return (
+    <a
+      href={url}
+      {...(external && !url.startsWith("mailto") ? { target: "_blank", rel: "noreferrer" } : {})}
+      className={b.style === "ghost" ? "btn btn-ghost" : "btn btn-primary"}
+    >
+      {lang === "he" ? b.labelHe : b.labelEn}
+    </a>
+  );
+}
 
 const hrefFor = (lang: Lang, path: string) =>
   lang === "he" ? `/he${path}` : path || "/";
@@ -61,13 +75,18 @@ export function Footer({ lang }: { lang: Lang }) {
       <div className="mx-auto flex max-w-6xl flex-col items-center gap-6 px-6 py-14 text-center">
         <Diamonds className="h-6 w-auto text-[var(--muted)]" />
         <p className="display text-lg tracking-wide">{dict[lang].hero.tagline}</p>
-        <div className="flex gap-6 text-[0.7rem] uppercase tracking-[0.22em] text-[var(--muted)]">
-          <a href={links.youtube} target="_blank" rel="noreferrer" className="transition hover:text-[var(--ink)]">{t.contact.followYt}</a>
-          <a href={links.instagram} target="_blank" rel="noreferrer" className="transition hover:text-[var(--ink)]">{t.contact.followIg}</a>
-          <a href={links.appleArtist} target="_blank" rel="noreferrer" className="transition hover:text-[var(--ink)]">{t.contact.followAm}</a>
-          {links.spotifyArtist && (
-            <a href={links.spotifyArtist} target="_blank" rel="noreferrer" className="transition hover:text-[var(--ink)]">Spotify</a>
-          )}
+        <div className="flex flex-wrap justify-center gap-6 text-[0.7rem] uppercase tracking-[0.22em] text-[var(--muted)]">
+          {(buttons.footer ?? []).map((b, i) => (
+            <a
+              key={i}
+              href={resolveBtnUrl(b.url)}
+              target="_blank"
+              rel="noreferrer"
+              className="transition hover:text-[var(--ink)]"
+            >
+              {lang === "he" ? b.labelHe : b.labelEn}
+            </a>
+          ))}
         </div>
         <div className="space-y-1 text-xs text-[var(--muted)]">
           <p>{t.footer.credit}</p>
@@ -169,17 +188,9 @@ export async function Home({ lang }: { lang: Lang }) {
           </Reveal>
           <Reveal delay={500}>
             <div className="mt-4 flex flex-col items-center gap-4 sm:flex-row">
-              <a
-                href={`https://www.youtube.com/watch?v=${latestVideo.id}`}
-                target="_blank"
-                rel="noreferrer"
-                className="btn btn-primary"
-              >
-                {t.hero.watch}
-              </a>
-              <a href="#sessions" className="btn btn-ghost">
-                {t.hero.explore} ↓
-              </a>
+              {(buttons.hero ?? []).map((b, i) => (
+                <BtnLink key={i} b={b} lang={lang} latestId={latestVideo.id} />
+              ))}
             </div>
           </Reveal>
         </div>
@@ -253,27 +264,35 @@ export async function Home({ lang }: { lang: Lang }) {
             </Reveal>
           </div>
           <Reveal className="mt-12">
-            <div dir="ltr" className="grid grid-flow-dense grid-cols-2 gap-3 px-6 auto-rows-[130px] sm:auto-rows-[110px] sm:grid-cols-6 sm:gap-4 sm:px-12">
-              {bts.map((b) => {
-                const size = b.size ?? "m";
-                const cls =
-                  size === "l"
-                    ? "col-span-2 row-span-2 sm:col-span-4 sm:row-span-3"
-                    : size === "s"
-                    ? "col-span-1 row-span-1 sm:col-span-2 sm:row-span-2"
-                    : "col-span-1 row-span-2 sm:col-span-2 sm:row-span-3";
-                return (
-                  <div key={b.src} className={`relative overflow-hidden border hairline ${cls}`}>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={b.src}
-                      alt=""
-                      loading="lazy"
-                      className="absolute inset-0 h-full w-full object-cover opacity-85 transition duration-700 hover:scale-[1.02] hover:opacity-100"
-                    />
-                  </div>
-                );
-              })}
+            <div dir="ltr" className="px-6 sm:px-12">
+              {/* מובייל: שני טורים, יחס מקורי מלא */}
+              <div className="columns-2 gap-3 sm:hidden [&>img]:mb-3">
+                {bts.map((b) => (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img key={b.src} src={b.src} alt="" loading="lazy" className="w-full break-inside-avoid border hairline" />
+                ))}
+              </div>
+              {/* דסקטופ: מונטאז' לפי פורמט התמונה והגודל שנבחר */}
+              <div className="hidden auto-rows-[7.2vw] grid-flow-dense grid-cols-12 gap-4 sm:grid">
+                {bts.map((b) => {
+                  const { c, r } = btsSpan(b);
+                  return (
+                    <div
+                      key={b.src}
+                      style={{ gridColumn: `span ${c}`, gridRow: `span ${r}` }}
+                      className="relative overflow-hidden border hairline"
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={b.src}
+                        alt=""
+                        loading="lazy"
+                        className="absolute inset-0 h-full w-full object-cover opacity-85 transition duration-700 hover:scale-[1.02] hover:opacity-100"
+                      />
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </Reveal>
         </section>
@@ -285,9 +304,11 @@ export async function Home({ lang }: { lang: Lang }) {
           <Diamonds className="mx-auto h-6 w-auto text-[var(--muted)]" />
           <h2 className="display mt-8 text-3xl sm:text-4xl">{t.artists.title}</h2>
           <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-[var(--muted)]">{t.artists.p}</p>
-          <a href={`mailto:${links.email}?subject=TAKE`} className="btn btn-primary mt-10">
-            {t.artists.cta}
-          </a>
+          <div className="mt-10 flex flex-wrap justify-center gap-4">
+            {(buttons.artists ?? []).map((b, i) => (
+              <BtnLink key={i} b={b} lang={lang} />
+            ))}
+          </div>
           <p className="mt-12 text-sm text-[var(--muted)]">{t.contact.p}</p>
         </Reveal>
       </section>

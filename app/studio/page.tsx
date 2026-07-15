@@ -466,7 +466,7 @@ export default function Studio() {
       });
       if (!res.ok) throw new Error(await res.text());
       const { path } = await res.json();
-      setBts([...btsList, { src: path, size: "m" }]);
+      setBts([...btsList, { src: path, size: "m", ratio: Math.round((img.width / img.height) * 100) / 100 } as { src: string; size?: string }]);
       setMsg("התמונה הועלתה! עכשיו לחץ \"שמור ופרסם\" כדי שתופיע באתר.");
       setSaved(true);
     } catch {
@@ -585,17 +585,16 @@ export default function Studio() {
             <p className="mb-3 text-[0.6rem] uppercase tracking-[0.25em] text-[var(--muted)]">
               ● תצוגה מקדימה — ככה המונטאז' נראה באתר, מתעדכן בזמן אמת
             </p>
-            <div dir="ltr" className="grid auto-rows-[52px] grid-flow-dense grid-cols-6 gap-2">
+            <div dir="ltr" className="grid auto-rows-[48px] grid-flow-dense grid-cols-12 gap-2">
               {btsList.map((b, i) => {
+                const ratio = (b as { ratio?: number }).ratio ?? 1.5;
                 const size = b.size ?? "m";
-                const cls =
-                  size === "l"
-                    ? "col-span-4 row-span-3"
-                    : size === "s"
-                    ? "col-span-2 row-span-2"
-                    : "col-span-2 row-span-3";
+                const portrait = ratio < 0.9;
+                const [c, r] = portrait
+                  ? size === "s" ? [3, 5] : size === "l" ? [6, 9] : [4, 6]
+                  : size === "s" ? [4, 3] : size === "l" ? [8, 6] : [6, 4];
                 return (
-                  <div key={b.src + i} className={`relative overflow-hidden rounded-sm border border-[var(--line)] ${cls}`}>
+                  <div key={b.src + i} style={{ gridColumn: `span ${c}`, gridRow: `span ${r}` }} className="relative overflow-hidden rounded-sm border border-[var(--line)]">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={b.src} alt="" className="absolute inset-0 h-full w-full object-cover" />
                   </div>
@@ -644,6 +643,77 @@ export default function Studio() {
           />
         </div>
       </div>
+
+      <h2 className="label mb-3 mt-14">כפתורים</h2>
+      {(() => {
+        const btnGroups = (content.buttons as Record<string, Json[]>) ?? {};
+        const GROUP_LABELS: Record<string, string> = {
+          hero: "מסך פתיחה (Hero)",
+          artists: "אזור לאמנים",
+          footer: "קישורי פוטר (רשתות)",
+        };
+        const HINT =
+          'יעד הכפתור: כתובת מלאה (https://...), עוגן בעמוד (#sessions), או קיצור: @latest = הסרטון האחרון, @email = מייל, @youtube / @instagram / @appleArtist / @spotifyArtist = מהקישורים הכלליים';
+        function setGroup(g: string, next: Json[]) {
+          setContent({ ...content, buttons: { ...btnGroups, [g]: next } });
+        }
+        return (
+          <div className={cardCls}>
+            <p className="mb-4 text-xs leading-relaxed text-[var(--muted)]">{HINT}</p>
+            {Object.entries(GROUP_LABELS).map(([g, gl]) => {
+              const list = btnGroups[g] ?? [];
+              return (
+                <details key={g} className="mb-3 rounded-xl border border-[var(--line)] p-4">
+                  <summary className="cursor-pointer text-sm text-[var(--muted)]">{gl}</summary>
+                  <div className="mt-3 space-y-3">
+                    {list.map((b, i) => (
+                      <div key={i} className="rounded-lg border border-[var(--line)] p-3">
+                        <div className="grid gap-2 sm:grid-cols-2">
+                          <label className="block">
+                            <span className={labelCls}>טקסט — עברית</span>
+                            <input className={inputCls} dir="rtl" value={String(b.labelHe ?? "")} onChange={(e) => setGroup(g, list.map((x, j) => (j === i ? { ...x, labelHe: e.target.value } : x)))} />
+                          </label>
+                          <label className="block">
+                            <span className={labelCls}>טקסט — אנגלית</span>
+                            <input className={inputCls} dir="ltr" value={String(b.labelEn ?? "")} onChange={(e) => setGroup(g, list.map((x, j) => (j === i ? { ...x, labelEn: e.target.value } : x)))} />
+                          </label>
+                        </div>
+                        <label className="block">
+                          <span className={labelCls}>יעד</span>
+                          <input className={inputCls} dir="ltr" value={String(b.url ?? "")} onChange={(e) => setGroup(g, list.map((x, j) => (j === i ? { ...x, url: e.target.value } : x)))} />
+                        </label>
+                        <div className="mt-3 flex items-center justify-between">
+                          {g !== "footer" ? (
+                            <select
+                              className="rounded-lg border border-[var(--line)] bg-transparent px-2 py-1.5 text-xs text-[var(--ink)]"
+                              value={String(b.style ?? "primary")}
+                              onChange={(e) => setGroup(g, list.map((x, j) => (j === i ? { ...x, style: e.target.value } : x)))}
+                            >
+                              <option value="primary">מלא (ראשי)</option>
+                              <option value="ghost">מתאר (משני)</option>
+                            </select>
+                          ) : <span />}
+                          <div className="flex gap-1.5">
+                            <button title="הקדם" className="rounded-lg border border-[var(--line)] px-2.5 py-1.5 text-xs hover:border-[var(--ink)]" onClick={() => { if (i > 0) { const n = [...list]; [n[i - 1], n[i]] = [n[i], n[i - 1]]; setGroup(g, n); } }}>→</button>
+                            <button title="אחרה" className="rounded-lg border border-[var(--line)] px-2.5 py-1.5 text-xs hover:border-[var(--ink)]" onClick={() => { if (i < list.length - 1) { const n = [...list]; [n[i + 1], n[i]] = [n[i], n[i + 1]]; setGroup(g, n); } }}>←</button>
+                            <button className="rounded-lg border border-red-500/40 px-2.5 py-1.5 text-xs text-red-400" onClick={() => { if (confirm("להסיר את הכפתור?")) setGroup(g, list.filter((_, j) => j !== i)); }}>✕</button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                    <button
+                      className="rounded-full border border-dashed border-[var(--line)] px-5 py-2 text-sm text-[var(--muted)] hover:border-[var(--ink)] hover:text-[var(--ink)]"
+                      onClick={() => setGroup(g, [...list, { labelHe: "כפתור חדש", labelEn: "New button", url: "#", ...(g !== "footer" ? { style: "ghost" } : {}) }])}
+                    >
+                      + כפתור חדש
+                    </button>
+                  </div>
+                </details>
+              );
+            })}
+          </div>
+        );
+      })()}
 
       {content.texts ? (
         <>
