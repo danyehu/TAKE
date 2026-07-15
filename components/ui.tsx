@@ -153,3 +153,38 @@ export function MobileMenu({
     </div>
   );
 }
+
+/* גלילה חלקה ואיטית לעוגנים פנימיים (#sessions וכו') */
+export function SmoothScroll() {
+  useEffect(() => {
+    function onClick(e: MouseEvent) {
+      const a = (e.target as HTMLElement).closest("a");
+      if (!a) return;
+      const href = a.getAttribute("href") || "";
+      const hashIndex = href.indexOf("#");
+      if (hashIndex === -1) return;
+      const path = href.slice(0, hashIndex).replace(/\/$/, "");
+      const current = location.pathname.replace(/\/$/, "");
+      if (path && path !== current) return; // ניווט לעמוד אחר — לא מתערבים
+      const el = document.querySelector(href.slice(hashIndex));
+      if (!el) return;
+      e.preventDefault();
+      const startY = window.scrollY;
+      const targetY = el.getBoundingClientRect().top + startY - 72;
+      const dist = targetY - startY;
+      const dur = Math.min(1400, Math.max(700, Math.abs(dist) * 0.55));
+      const t0 = performance.now();
+      const ease = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+      function step(now: number) {
+        const p = Math.min(1, (now - t0) / dur);
+        window.scrollTo(0, startY + dist * ease(p));
+        if (p < 1) requestAnimationFrame(step);
+        else history.pushState(null, "", href.slice(hashIndex));
+      }
+      requestAnimationFrame(step);
+    }
+    document.addEventListener("click", onClick);
+    return () => document.removeEventListener("click", onClick);
+  }, []);
+  return null;
+}
