@@ -141,6 +141,106 @@ function tLabel(k: string) {
   return SECTION_LABELS[k] ?? FIELD_LABELS[k] ?? k;
 }
 
+
+/* תצוגה מקדימה חיה של כל רכיב — מתעדכנת בזמן אמת בזמן ההקלדה */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function SectionPreview({ sect, value, rtl }: { sect: string; value: any; rtl: boolean }) {
+  const dir = rtl ? "rtl" : "ltr";
+  const pillBtn =
+    "inline-flex items-center justify-center rounded-full border border-[var(--ink)] bg-[var(--ink)] px-6 py-2 text-[0.65rem] uppercase tracking-[0.2em] text-[var(--bg)]";
+  const ghostBtn =
+    "inline-flex items-center justify-center rounded-full border border-[var(--line)] px-6 py-2 text-[0.65rem] uppercase tracking-[0.2em] text-[var(--muted)]";
+
+  let inner: React.ReactNode = null;
+
+  if (sect === "nav") {
+    inner = (
+      <div className="flex flex-wrap items-center gap-6 text-[0.68rem] uppercase tracking-[0.22em] text-[var(--muted)]">
+        <span className="display text-base normal-case tracking-[0.18em] text-[var(--ink)]">
+          {rtl ? "טֵיְיק" : "TAKE"}
+        </span>
+        {Object.values(value ?? {}).map((v, i) => (
+          <span key={i}>{String(v)}</span>
+        ))}
+      </div>
+    );
+  } else if (sect === "hero") {
+    inner = (
+      <div className="flex flex-col items-center gap-4 text-center">
+        <span className="inline-flex items-center gap-2 rounded-full border border-[var(--line)] px-4 py-1.5 text-[0.62rem] tracking-[0.14em] text-[var(--muted)]">
+          <span className="h-1 w-1 rounded-full bg-[var(--ink)]" />
+          {rtl ? "ריליס אחרון — שם הסשן" : "Latest release — session name"}
+        </span>
+        <p className="label">{value?.kicker}</p>
+        <h3 className="display text-3xl leading-tight">{value?.tagline}</h3>
+        <div className="flex flex-wrap justify-center gap-3">
+          <span className={pillBtn}>{value?.watch}</span>
+          <span className={ghostBtn}>{value?.explore} ↓</span>
+        </div>
+      </div>
+    );
+  } else if (sect === "format") {
+    inner = (
+      <div>
+        <p className="label">{value?.label}</p>
+        <h3 className="display mt-2 text-2xl">{value?.title}</h3>
+        <div className="mt-4 grid grid-cols-2 gap-3">
+          {(value?.steps ?? []).map((st: { t: string; d: string }, i: number) => (
+            <div key={i} className="border border-[var(--line)] p-3">
+              <p className="label">0{i + 1}</p>
+              <p className="display mt-1 text-base">{st?.t}</p>
+              <p className="mt-1 text-xs leading-relaxed text-[var(--muted)]">{st?.d}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  } else if (typeof value === "string") {
+    inner = <p className="label">{value}</p>;
+  } else {
+    // מבנה כללי: תווית, כותרת, פסקאות, כפתורים ושורות קטנות
+    const v = value ?? {};
+    const buttons = ["cta", "emailCta", "watch", "watchYt", "streamOn"].filter((k) => v[k]);
+    const smalls = ["credit", "dist", "back", "songs", "comingSoon", "inProduction", "watch", "listen", "followYt", "followIg", "followAm"].filter(
+      (k) => v[k] && !buttons.includes(k)
+    );
+    inner = (
+      <div>
+        {v.label && <p className="label">{v.label}</p>}
+        {v.title && <h3 className="display mt-2 text-2xl">{v.title}</h3>}
+        {v.p && <p className="mt-3 max-w-md text-sm leading-relaxed text-[var(--muted)]">{v.p}</p>}
+        {v.p1 && <p className="mt-3 max-w-md text-sm leading-relaxed text-[var(--muted)]">{v.p1}</p>}
+        {v.p2 && <p className="mt-2 max-w-md text-sm leading-relaxed text-[var(--muted)]">{v.p2}</p>}
+        {buttons.length > 0 && (
+          <div className="mt-4 flex flex-wrap gap-3">
+            {buttons.map((k) => (
+              <span key={k} className={pillBtn}>{v[k]}</span>
+            ))}
+          </div>
+        )}
+        {smalls.length > 0 && (
+          <div className="mt-4 flex flex-wrap gap-2">
+            {smalls.map((k) => (
+              <span key={k} className="rounded-full border border-[var(--line)] px-3 py-1 text-[0.62rem] tracking-[0.14em] text-[var(--muted)]">
+                {v[k]}
+              </span>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div dir={dir} className="mb-5 rounded-xl border border-dashed border-[var(--ink)]/25 bg-[var(--bg)] p-6">
+      <p className="mb-4 text-[0.6rem] uppercase tracking-[0.25em] text-[var(--muted)]" dir="rtl">
+        ● תצוגה מקדימה — ככה זה נראה באתר, מתעדכן בזמן אמת
+      </p>
+      {inner}
+    </div>
+  );
+}
+
 /* עורך רקורסיבי לכל טקסטי האתר */
 function TextsNode({
   value,
@@ -415,6 +515,7 @@ export default function Studio() {
                         {tLabel(sect)}
                       </summary>
                       <div className="mt-2">
+                        <SectionPreview sect={sect} value={v} rtl={lng === "he"} />
                         <TextsNode
                           value={v}
                           rtl={lng === "he"}
