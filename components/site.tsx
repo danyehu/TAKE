@@ -72,7 +72,7 @@ function SessionCard({ s, lang }: { s: Session; lang: Lang }) {
 
   if (s.status === "coming-soon") {
     return (
-      <div className="group relative flex aspect-[4/3] flex-col items-center justify-center gap-4 border hairline bg-[var(--bg2)] p-8 text-center">
+      <div className="group relative flex aspect-video flex-col items-center justify-center gap-4 border hairline bg-[var(--bg2)] p-8 text-center transition duration-500 hover:-translate-y-1">
         <Diamonds className="h-5 w-auto text-[var(--muted)] opacity-60 transition duration-700 group-hover:opacity-100" />
         <p className="label">{t.sessions.comingSoon}</p>
         <p className="display text-2xl">{artist}</p>
@@ -84,12 +84,12 @@ function SessionCard({ s, lang }: { s: Session; lang: Lang }) {
   return (
     <Link
       href={hrefFor(lang, `/sessions/${s.slug}`)}
-      className="group relative block aspect-[4/3] overflow-hidden border hairline bg-[var(--bg2)]"
+      className="group relative block aspect-video overflow-hidden border hairline bg-[var(--bg2)] transition duration-500 hover:-translate-y-1 hover:border-[var(--ink)]/40"
     >
       {s.youtubeId ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
-          src={`https://i.ytimg.com/vi/${s.youtubeId}/hqdefault.jpg`}
+          src={`https://i.ytimg.com/vi/${s.youtubeId}/maxresdefault.jpg`}
           alt={`${artist} — ${title}`}
           className="h-full w-full object-cover opacity-70 transition duration-700 group-hover:scale-[1.04] group-hover:opacity-90"
         />
@@ -189,7 +189,7 @@ export async function Home({ lang }: { lang: Lang }) {
             <h2 className="display mt-5 text-3xl sm:text-4xl">{t.format.title}</h2>
           </Reveal>
           <div className="mt-14 grid gap-px border hairline bg-[var(--line)] sm:grid-cols-2 lg:grid-cols-4">
-            {t.format.steps.map((s, i) => (
+            {t.format.steps.map((s: { t: string; d: string }, i: number) => (
               <Reveal key={s.t} delay={i * 120} className="bg-[var(--bg2)] p-8">
                 <p className="label">0{i + 1}</p>
                 <h3 className="display mt-4 text-xl">{s.t}</h3>

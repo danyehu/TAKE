@@ -108,6 +108,100 @@ function Field({
   return null;
 }
 
+const SECTION_LABELS: Record<string, string> = {
+  nav: "תפריט ניווט",
+  hero: "מסך פתיחה (Hero)",
+  latest: "תווית ריליס אחרון",
+  about: "על הפרויקט",
+  format: "הפורמט (4 השלבים)",
+  sessions: "כותרות אזור הסשנים",
+  space: "המקום",
+  artists: "לאמנים",
+  contact: "צרו קשר",
+  footer: "פוטר",
+  kicker: "שורת פתיח קטנה",
+  tagline: "המשפט הראשי",
+  watch: "כפתור צפייה",
+  explore: "כפתור לכל הסשנים",
+  label: "תווית קטנה",
+  title: "כותרת",
+  p: "פסקה",
+  p1: "פסקה ראשונה",
+  p2: "פסקה שנייה",
+  cta: "כפתור",
+  credit: "שורת קרדיט",
+  dist: "שורת הפצה",
+  steps: "שלבים",
+  t: "כותרת שלב",
+  d: "תיאור שלב",
+};
+
+function tLabel(k: string) {
+  return SECTION_LABELS[k] ?? FIELD_LABELS[k] ?? k;
+}
+
+/* עורך רקורסיבי לכל טקסטי האתר */
+function TextsNode({
+  value,
+  rtl,
+  onChange,
+}: {
+  value: unknown;
+  rtl: boolean;
+  onChange: (v: unknown) => void;
+}) {
+  if (typeof value === "string") {
+    const long = value.length > 90;
+    return long ? (
+      <textarea
+        className={`${inputCls} min-h-24`}
+        dir={rtl ? "rtl" : "ltr"}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+      />
+    ) : (
+      <input
+        className={inputCls}
+        dir={rtl ? "rtl" : "ltr"}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+      />
+    );
+  }
+  if (Array.isArray(value)) {
+    return (
+      <div className="space-y-4">
+        {value.map((item, i) => (
+          <div key={i} className="rounded-xl border border-[var(--line)] p-4">
+            <TextsNode
+              value={item}
+              rtl={rtl}
+              onChange={(nv) => onChange(value.map((x, j) => (j === i ? nv : x)))}
+            />
+          </div>
+        ))}
+      </div>
+    );
+  }
+  if (value && typeof value === "object") {
+    return (
+      <div>
+        {Object.entries(value as Json).map(([k, v]) => (
+          <div key={k}>
+            <span className={labelCls}>{tLabel(k)}</span>
+            <TextsNode
+              value={v}
+              rtl={rtl}
+              onChange={(nv) => onChange({ ...(value as Json), [k]: nv })}
+            />
+          </div>
+        ))}
+      </div>
+    );
+  }
+  return null;
+}
+
 const EMPTY_SESSION = {
   slug: "",
   status: "released",
@@ -302,6 +396,46 @@ export default function Studio() {
           ))}
         </div>
       ))}
+
+      {content.texts ? (
+        <>
+          <h2 className="label mb-3 mt-14">טקסטים באתר</h2>
+          {(["he", "en"] as const).map((lng) => {
+            const texts = (content.texts as Json)[lng] as Json;
+            return (
+              <details key={lng} className={cardCls}>
+                <summary className="display cursor-pointer text-lg">
+                  {lng === "he" ? "עברית" : "English"}
+                </summary>
+                <div className="mt-4">
+                  {Object.entries(texts).map(([sect, v]) => (
+                    <details key={sect} className="mb-3 rounded-xl border border-[var(--line)] p-4">
+                      <summary className="cursor-pointer text-sm text-[var(--muted)]">
+                        {tLabel(sect)}
+                      </summary>
+                      <div className="mt-2">
+                        <TextsNode
+                          value={v}
+                          rtl={lng === "he"}
+                          onChange={(nv) =>
+                            setContent({
+                              ...content,
+                              texts: {
+                                ...(content.texts as Json),
+                                [lng]: { ...texts, [sect]: nv },
+                              },
+                            })
+                          }
+                        />
+                      </div>
+                    </details>
+                  ))}
+                </div>
+              </details>
+            );
+          })}
+        </>
+      ) : null}
 
       <div className="mt-10 flex justify-end">
         <button className={btnCls} onClick={save} disabled={busy}>

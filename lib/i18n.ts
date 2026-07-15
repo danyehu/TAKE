@@ -1,134 +1,17 @@
+import data from "./content.json";
+
 export type Lang = "en" | "he";
 
-export const dict = {
-  en: {
-    dir: "ltr",
-    nav: { sessions: "Sessions", about: "About", space: "The Space", contact: "Contact" },
-    switchLabel: "עברית",
-    switchHref: "/he",
-    hero: {
-      kicker: "Intimate live sessions · Filmed in Jerusalem",
-      tagline: "Live Sessions. Real Moments. One TAKE.",
-      watch: "Watch on YouTube",
-      explore: "Explore sessions",
-    },
-    latest: "Latest release",
-    about: {
-      label: "About",
-      title: "A room where something real happens",
-      p1: "TAKE is an independent cinematic live-session project created by Dan Yehuda and filmed at HaMiffal in Jerusalem. Each session brings an artist into a close, character-filled space to perform specially arranged versions of their music.",
-      p2: "The project combines live performance, professional sound recording and intimate filmmaking — keeping the human reality of the moment at its center. The room, the musicians, the audience, the pauses, the details that cannot be recreated twice.",
-    },
-    format: {
-      label: "The Format",
-      title: "How a TAKE is made",
-      steps: [
-        { t: "Curation", d: "One artist per session. Songs chosen together, then rearranged — a version that exists only here." },
-        { t: "One room", d: "A small audience, close to the artist. No stage, no distance. The room breathes with the performance." },
-        { t: "Cinematic capture", d: "Multi-camera filming and professional sound recording that serve presence, not spectacle." },
-        { t: "Release", d: "Full sessions and singles released to all platforms — a catalogue of moments that stay." },
-      ],
-    },
-    sessions: {
-      label: "Sessions",
-      title: "The catalogue",
-      comingSoon: "Coming soon",
-      inProduction: "In production",
-      watch: "Watch",
-      watchYt: "Watch on YouTube",
-      listen: "Listen",
-      songs: "Songs",
-      back: "All sessions",
-      streamOn: "Stream",
-    },
-    space: {
-      label: "The Space",
-      title: "HaMiffal, Jerusalem",
-      p1: "TAKE is filmed at HaMiffal — an independent cultural institution in the heart of Jerusalem. Not a set, not a studio: a living building with textures, layers and marks of the people who make it.",
-      p2: "The space gives every session its context — the acoustics, the warmth, the sense that you have walked into something that could only happen here, on this day.",
-    },
-    artists: {
-      title: "For artists",
-      p: "TAKE is a curated artistic partnership, not a video service. If the project speaks to you — reach out.",
-      cta: "Get in touch",
-    },
-    contact: {
-      label: "Contact",
-      title: "Stay close",
-      p: "New sessions, releases and behind-the-scenes — occasionally, and only when it matters.",
-      emailCta: "Write to us",
-      followYt: "YouTube",
-      followIg: "Instagram",
-      followAm: "Apple Music",
-    },
-    footer: {
-      credit: "Created by Dan Yehuda · Filmed at HaMiffal, Jerusalem",
-      dist: "Music distributed through Universal Music Israel",
-    },
-  },
-  he: {
-    dir: "rtl",
-    nav: { sessions: "סשנים", about: "על הפרויקט", space: "המקום", contact: "צרו קשר" },
-    switchLabel: "English",
-    switchHref: "/",
-    hero: {
-      kicker: "לייב סשנים אינטימיים · מצולם בירושלים",
-      tagline: "ביצועים חיים. רגעים אמיתיים. טֵיְיק אחד.",
-      watch: "לצפייה ביוטיוב",
-      explore: "לכל הסשנים",
-    },
-    latest: "ריליס אחרון",
-    about: {
-      label: "על הפרויקט",
-      title: "חדר שבו קורה משהו אמיתי",
-      p1: "טֵיְיק הוא פרויקט לייב סשנים מוזיקלי־קולנועי עצמאי, שנוצר על ידי דן יהודה ומצולם במפעל בירושלים. בכל סשן אמן או הרכב מבצעים גרסאות חיות ובעיבודים מיוחדים לשירים שלהם, בתוך חלל קרוב ובעל אופי.",
-      p2: "הפרויקט מחבר בין ביצוע חי, הקלטת סאונד מקצועית וצילום אינטימי — תוך שמירה על האנושיות והאמת של הרגע. החלל, הנגנים, הקהל, המבטים, הנשימות והרגעים שלא ניתן לשחזר בדיוק באותה צורה.",
-    },
-    format: {
-      label: "הפורמט",
-      title: "איך נולד טֵיְיק",
-      steps: [
-        { t: "אוצרות", d: "אמן אחד בכל סשן. השירים נבחרים יחד ומעובדים מחדש — גרסה שקיימת רק כאן." },
-        { t: "חדר אחד", d: "קהל קטן, קרוב לאמן. בלי במה, בלי מרחק. החדר נושם יחד עם הביצוע." },
-        { t: "צילום קולנועי", d: "צילום רב־מצלמתי והקלטת סאונד מקצועית שמשרתים נוכחות, לא ראווה." },
-        { t: "ריליס", d: "סשנים מלאים וסינגלים בכל הפלטפורמות — קטלוג של רגעים שנשארים." },
-      ],
-    },
-    sessions: {
-      label: "סשנים",
-      title: "הקטלוג",
-      comingSoon: "בקרוב",
-      inProduction: "בהפקה",
-      watch: "לצפייה",
-      watchYt: "לצפייה ביוטיוב",
-      listen: "להאזנה",
-      songs: "שירים",
-      back: "כל הסשנים",
-      streamOn: "להאזנה",
-    },
-    space: {
-      label: "המקום",
-      title: "המפעל, ירושלים",
-      p1: "טֵיְיק מצולם במפעל — מוסד תרבות עצמאי בלב ירושלים. לא סט ולא אולפן: מבנה חי, עם טקסטורות, שכבות וסימנים של האנשים שיוצרים אותו.",
-      p2: "המקום מעניק לכל סשן את ההקשר שלו — האקוסטיקה, החום, והתחושה שנכנסת למשהו שיכול היה לקרות רק כאן, באותו יום.",
-    },
-    artists: {
-      title: "לאמנים",
-      p: "טֵיְיק הוא שותפות אמנותית אוצרותית, לא שירות צילום. אם הפרויקט מדבר אליכם — דברו איתנו.",
-      cta: "צרו קשר",
-    },
-    contact: {
-      label: "צרו קשר",
-      title: "להישאר קרובים",
-      p: "סשנים חדשים, ריליסים ומאחורי הקלעים — מדי פעם, ורק כשזה שווה את זה.",
-      emailCta: "כתבו לנו",
-      followYt: "יוטיוב",
-      followIg: "אינסטגרם",
-      followAm: "אפל מיוזיק",
-    },
-    footer: {
-      credit: "נוצר על ידי דן יהודה · מצולם במפעל, ירושלים",
-      dist: "המוזיקה מופצת דרך Universal Music Israel",
-    },
-  },
+const meta = {
+  en: { dir: "ltr", switchLabel: "עברית", switchHref: "/he" },
+  he: { dir: "rtl", switchLabel: "English", switchHref: "/" },
 } as const;
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const texts = data.texts as any;
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const dict: any = {
+  en: { ...texts.en, ...meta.en },
+  he: { ...texts.he, ...meta.he },
+};
