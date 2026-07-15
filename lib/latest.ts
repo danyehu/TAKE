@@ -1,4 +1,4 @@
-import { released, youtubeChannelId } from "./content";
+import { released, youtubeChannelId, ytId } from "./content";
 
 export type LatestVideo = { id: string; title: string };
 
@@ -10,7 +10,7 @@ export type LatestVideo = { id: string; title: string };
 export async function getLatestVideo(): Promise<LatestVideo> {
   const fallback = released.find((s) => s.youtubeId);
   const fb: LatestVideo = {
-    id: fallback?.youtubeId ?? "",
+    id: ytId(fallback?.youtubeId),
     title: fallback ? `${fallback.artistEn} — ${fallback.titleEn}` : "",
   };
   try {

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { dict, type Lang } from "@/lib/i18n";
-import { sessions, links, type Session } from "@/lib/content";
+import { sessions, links, ytId, type Session } from "@/lib/content";
 import { getLatestVideo } from "@/lib/latest";
 import { Diamonds, Reveal, YouTube } from "@/components/ui";
 
@@ -89,7 +89,7 @@ function SessionCard({ s, lang }: { s: Session; lang: Lang }) {
       {s.youtubeId ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
-          src={`https://i.ytimg.com/vi/${s.youtubeId}/maxresdefault.jpg`}
+          src={`https://i.ytimg.com/vi/${ytId(s.youtubeId)}/maxresdefault.jpg`}
           alt={`${artist} — ${title}`}
           className="h-full w-full object-cover opacity-70 transition duration-700 group-hover:scale-[1.04] group-hover:opacity-90"
         />
@@ -276,7 +276,7 @@ export function SessionView({ s, lang }: { s: Session; lang: Lang }) {
 
       <div className="mt-12 border hairline">
         {s.youtubeId ? (
-          <YouTube id={s.youtubeId} title={`${artist} — ${title}`} playLabel={t.sessions.watch} />
+          <YouTube id={ytId(s.youtubeId)} title={`${artist} — ${title}`} playLabel={t.sessions.watch} />
         ) : (
           <div className="flex aspect-video items-center justify-center bg-[var(--bg2)]">
             <Diamonds className="h-8 w-auto text-[var(--muted)]" />
@@ -289,7 +289,7 @@ export function SessionView({ s, lang }: { s: Session; lang: Lang }) {
           {desc && <p className="text-lg leading-relaxed text-[var(--muted)]">{desc}</p>}
           <div className="mt-10 flex flex-wrap gap-4">
             {s.youtubeId && (
-              <a href={`https://www.youtube.com/watch?v=${s.youtubeId}`} target="_blank" rel="noreferrer" className="btn btn-primary">
+              <a href={`https://www.youtube.com/watch?v=${ytId(s.youtubeId)}`} target="_blank" rel="noreferrer" className="btn btn-primary">
                 {t.sessions.watchYt}
               </a>
             )}

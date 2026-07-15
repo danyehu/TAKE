@@ -23,3 +23,10 @@ export const upcoming = sessions.filter((s) => s.status === "coming-soon");
 export const latest = released[0];
 export const links = data.links;
 export const youtubeChannelId = data.youtubeChannelId;
+
+/** Accepts a plain video ID or any YouTube URL and returns the ID. */
+export function ytId(v?: string): string {
+  if (!v) return "";
+  const m = v.match(/(?:youtu\.be\/|v=|shorts\/|embed\/)([A-Za-z0-9_-]{11})/);
+  return m ? m[1] : v;
+}

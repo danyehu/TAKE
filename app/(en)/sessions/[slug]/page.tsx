@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { sessions, released } from "@/lib/content";
+import { sessions, released, ytId } from "@/lib/content";
 import { SessionView } from "@/components/site";
 import { SITE_URL } from "@/lib/site";
 
@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     openGraph: {
       title: `${s.artistEn} — ${s.titleEn} · TAKE Live Session`,
       description: s.descriptionEn,
-      images: s.youtubeId ? [`https://i.ytimg.com/vi/${s.youtubeId}/maxresdefault.jpg`] : [],
+      images: s.youtubeId ? [`https://i.ytimg.com/vi/${ytId(s.youtubeId)}/maxresdefault.jpg`] : [],
     },
   };
 }
@@ -35,9 +35,9 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
         "@type": "VideoObject",
         name: `${s.artistEn} — ${s.titleEn} (TAKE Live Session)`,
         description: s.descriptionEn,
-        thumbnailUrl: `https://i.ytimg.com/vi/${s.youtubeId}/maxresdefault.jpg`,
+        thumbnailUrl: `https://i.ytimg.com/vi/${ytId(s.youtubeId)}/maxresdefault.jpg`,
         uploadDate: s.date,
-        embedUrl: `https://www.youtube-nocookie.com/embed/${s.youtubeId}`,
+        embedUrl: `https://www.youtube-nocookie.com/embed/${ytId(s.youtubeId)}`,
         url: `${SITE_URL}/sessions/${s.slug}`,
       }
     : null;
