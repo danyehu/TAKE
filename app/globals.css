@@ -1,5 +1,12 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: "Index";
+  src: url("/fonts/index-bold.otf") format("opentype");
+  font-weight: 700;
+  font-display: swap;
+}
+
 :root {
   --font-display: "Cormorant Garamond", Georgia, serif;
   --font-sans: "Inter", system-ui, sans-serif;
@@ -67,12 +74,77 @@ body {
 }
 
 .display {
-  font-family: var(--font-display);
-  font-weight: 500;
+  font-family: "Index", var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.01em;
 }
 
 [dir="rtl"] .display {
+  font-family: "Index", var(--font-display-he);
+}
+
+.serif {
+  font-family: var(--font-display);
+}
+
+[dir="rtl"] .serif {
   font-family: var(--font-display-he);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 9999px;
+  padding: 0.9rem 2.2rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-primary {
+  background: var(--ink);
+  color: var(--bg);
+  border: 1px solid var(--ink);
+}
+
+.btn-primary:hover {
+  background: transparent;
+  color: var(--ink);
+  transform: translateY(-1px);
+}
+
+.btn-ghost {
+  border: 1px solid var(--line);
+  color: var(--muted);
+}
+
+.btn-ghost:hover {
+  border-color: var(--ink);
+  color: var(--ink);
+  transform: translateY(-1px);
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  border: 1px solid var(--line);
+  border-radius: 9999px;
+  padding: 0.5rem 1.2rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  color: var(--muted);
+  backdrop-filter: blur(8px);
+  background: rgba(11, 11, 12, 0.4);
+  transition: all 0.35s ease;
+}
+
+.pill:hover {
+  border-color: var(--ink);
+  color: var(--ink);
 }
 
 .hairline { border-color: var(--line); }

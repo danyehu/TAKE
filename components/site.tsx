@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { dict, type Lang } from "@/lib/i18n";
-import { sessions, released, links, type Session } from "@/lib/content";
+import { sessions, links, type Session } from "@/lib/content";
+import { getLatestVideo } from "@/lib/latest";
 import { Diamonds, Reveal, YouTube } from "@/components/ui";
 
 const hrefFor = (lang: Lang, path: string) =>
@@ -50,6 +51,9 @@ export function Footer({ lang }: { lang: Lang }) {
           <a href={links.youtube} target="_blank" rel="noreferrer" className="transition hover:text-[var(--ink)]">{t.contact.followYt}</a>
           <a href={links.instagram} target="_blank" rel="noreferrer" className="transition hover:text-[var(--ink)]">{t.contact.followIg}</a>
           <a href={links.appleArtist} target="_blank" rel="noreferrer" className="transition hover:text-[var(--ink)]">{t.contact.followAm}</a>
+          {links.spotifyArtist && (
+            <a href={links.spotifyArtist} target="_blank" rel="noreferrer" className="transition hover:text-[var(--ink)]">Spotify</a>
+          )}
         </div>
         <div className="space-y-1 text-xs text-[var(--muted)]">
           <p>{t.footer.credit}</p>
@@ -108,20 +112,18 @@ function SessionCard({ s, lang }: { s: Session; lang: Lang }) {
   );
 }
 
-export function Home({ lang }: { lang: Lang }) {
+export async function Home({ lang }: { lang: Lang }) {
   const t = dict[lang];
-  const hero = released.find((s) => s.youtubeId) ?? released[0];
-  const heroArtist = lang === "he" ? hero.artistHe : hero.artistEn;
-  const heroTitle = lang === "he" ? hero.titleHe : hero.titleEn;
+  const latestVideo = await getLatestVideo();
 
   return (
     <main>
       {/* HERO */}
       <section className="relative flex min-h-svh items-center justify-center overflow-hidden">
-        {hero.youtubeId && (
+        {latestVideo.id && (
           // eslint-disable-next-line @next/next/no-img-element
           <img
-            src={`https://i.ytimg.com/vi/${hero.youtubeId}/maxresdefault.jpg`}
+            src={`https://i.ytimg.com/vi/${latestVideo.id}/maxresdefault.jpg`}
             alt=""
             aria-hidden
             className="absolute inset-0 h-full w-full scale-105 object-cover opacity-35 blur-[2px]"
@@ -132,7 +134,18 @@ export function Home({ lang }: { lang: Lang }) {
           <Reveal>
             <Diamonds className="mx-auto h-8 w-auto text-[var(--ink)]" />
           </Reveal>
-          <Reveal delay={150}>
+          <Reveal delay={100}>
+            <a
+              href={`https://www.youtube.com/watch?v=${latestVideo.id}`}
+              target="_blank"
+              rel="noreferrer"
+              className="pill"
+            >
+              <span className="h-1.5 w-1.5 rounded-full bg-[var(--ink)]" />
+              {t.latest} — {latestVideo.title}
+            </a>
+          </Reveal>
+          <Reveal delay={200}>
             <p className="label">{t.hero.kicker}</p>
           </Reveal>
           <Reveal delay={300}>
@@ -142,24 +155,18 @@ export function Home({ lang }: { lang: Lang }) {
           </Reveal>
           <Reveal delay={500}>
             <div className="mt-4 flex flex-col items-center gap-4 sm:flex-row">
-              <Link
-                href={hrefFor(lang, `/sessions/${hero.slug}`)}
-                className="border border-[var(--ink)] px-8 py-3.5 text-[0.72rem] uppercase tracking-[0.24em] transition hover:bg-[var(--ink)] hover:text-[var(--bg)]"
+              <a
+                href={`https://www.youtube.com/watch?v=${latestVideo.id}`}
+                target="_blank"
+                rel="noreferrer"
+                className="btn btn-primary"
               >
                 {t.hero.watch}
-              </Link>
-              <a
-                href="#sessions"
-                className="px-8 py-3.5 text-[0.72rem] uppercase tracking-[0.24em] text-[var(--muted)] transition hover:text-[var(--ink)]"
-              >
+              </a>
+              <a href="#sessions" className="btn btn-ghost">
                 {t.hero.explore} ↓
               </a>
             </div>
-          </Reveal>
-          <Reveal delay={650}>
-            <p className="mt-6 text-xs tracking-[0.2em] text-[var(--muted)]">
-              {t.latest} — {heroArtist} · {heroTitle}
-            </p>
           </Reveal>
         </div>
       </section>
@@ -226,10 +233,7 @@ export function Home({ lang }: { lang: Lang }) {
           <Diamonds className="mx-auto h-6 w-auto text-[var(--muted)]" />
           <h2 className="display mt-8 text-3xl sm:text-4xl">{t.artists.title}</h2>
           <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-[var(--muted)]">{t.artists.p}</p>
-          <a
-            href={`mailto:${links.email}?subject=TAKE`}
-            className="mt-10 inline-block border border-[var(--ink)] px-10 py-4 text-[0.72rem] uppercase tracking-[0.24em] transition hover:bg-[var(--ink)] hover:text-[var(--bg)]"
-          >
+          <a href={`mailto:${links.email}?subject=TAKE`} className="btn btn-primary mt-10">
             {t.artists.cta}
           </a>
           <p className="mt-12 text-sm text-[var(--muted)]">{t.contact.p}</p>
@@ -284,19 +288,24 @@ export function SessionView({ s, lang }: { s: Session; lang: Lang }) {
         <div>
           {desc && <p className="text-lg leading-relaxed text-[var(--muted)]">{desc}</p>}
           <div className="mt-10 flex flex-wrap gap-4">
+            {s.youtubeId && (
+              <a href={`https://www.youtube.com/watch?v=${s.youtubeId}`} target="_blank" rel="noreferrer" className="btn btn-primary">
+                {t.sessions.watchYt}
+              </a>
+            )}
             {s.smartlink && (
-              <a href={s.smartlink} target="_blank" rel="noreferrer" className="border border-[var(--ink)] px-7 py-3 text-[0.7rem] uppercase tracking-[0.22em] transition hover:bg-[var(--ink)] hover:text-[var(--bg)]">
+              <a href={s.smartlink} target="_blank" rel="noreferrer" className="btn btn-ghost">
                 {t.sessions.streamOn}
               </a>
             )}
-            {s.appleMusic && (
-              <a href={s.appleMusic} target="_blank" rel="noreferrer" className="border hairline px-7 py-3 text-[0.7rem] uppercase tracking-[0.22em] text-[var(--muted)] transition hover:border-[var(--ink)] hover:text-[var(--ink)]">
-                Apple Music
+            {s.spotify && (
+              <a href={s.spotify} target="_blank" rel="noreferrer" className="btn btn-ghost">
+                Spotify
               </a>
             )}
-            {s.spotify && (
-              <a href={s.spotify} target="_blank" rel="noreferrer" className="border hairline px-7 py-3 text-[0.7rem] uppercase tracking-[0.22em] text-[var(--muted)] transition hover:border-[var(--ink)] hover:text-[var(--ink)]">
-                Spotify
+            {s.appleMusic && (
+              <a href={s.appleMusic} target="_blank" rel="noreferrer" className="btn btn-ghost">
+                Apple Music
               </a>
             )}
           </div>

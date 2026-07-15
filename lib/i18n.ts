@@ -9,7 +9,7 @@ export const dict = {
     hero: {
       kicker: "Intimate live sessions · Filmed in Jerusalem",
       tagline: "Live Sessions. Real Moments. One TAKE.",
-      watch: "Watch the latest session",
+      watch: "Watch on YouTube",
       explore: "Explore sessions",
     },
     latest: "Latest release",
@@ -35,6 +35,7 @@ export const dict = {
       comingSoon: "Coming soon",
       inProduction: "In production",
       watch: "Watch",
+      watchYt: "Watch on YouTube",
       listen: "Listen",
       songs: "Songs",
       back: "All sessions",
@@ -73,7 +74,7 @@ export const dict = {
     hero: {
       kicker: "לייב סשנים אינטימיים · מצולם בירושלים",
       tagline: "ביצועים חיים. רגעים אמיתיים. טֵיְיק אחד.",
-      watch: "לצפייה בסשן האחרון",
+      watch: "לצפייה ביוטיוב",
       explore: "לכל הסשנים",
     },
     latest: "ריליס אחרון",
@@ -99,6 +100,7 @@ export const dict = {
       comingSoon: "בקרוב",
       inProduction: "בהפקה",
       watch: "לצפייה",
+      watchYt: "לצפייה ביוטיוב",
       listen: "להאזנה",
       songs: "שירים",
       back: "כל הסשנים",
