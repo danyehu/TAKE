@@ -23,8 +23,11 @@ export const upcoming = sessions.filter((s) => s.status === "coming-soon");
 export const latest = released[0];
 export const links = data.links;
 export const youtubeChannelId = data.youtubeChannelId;
+export type BtsItem = { src: string; size?: "s" | "m" | "l" };
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const bts: string[] = (data as any).bts ?? [];
+export const bts: BtsItem[] = ((data as any).bts ?? []).map((x: unknown) =>
+  typeof x === "string" ? { src: x, size: "m" } : (x as BtsItem)
+);
 
 /** Accepts a plain video ID or any YouTube URL and returns the ID. */
 export function ytId(v?: string): string {

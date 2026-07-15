@@ -242,17 +242,27 @@ export async function Home({ lang }: { lang: Lang }) {
             </Reveal>
           </div>
           <Reveal className="mt-12">
-            <div dir="ltr" className="columns-2 gap-3 px-6 sm:columns-3 sm:gap-4 sm:px-12 [&>img]:mb-3 sm:[&>img]:mb-4">
-              {bts.map((src) => (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  key={src}
-                  src={src}
-                  alt=""
-                  loading="lazy"
-                  className="w-full break-inside-avoid border hairline object-cover opacity-85 transition duration-700 hover:opacity-100"
-                />
-              ))}
+            <div dir="ltr" className="grid grid-flow-dense grid-cols-2 gap-3 px-6 auto-rows-[130px] sm:auto-rows-[110px] sm:grid-cols-6 sm:gap-4 sm:px-12">
+              {bts.map((b) => {
+                const size = b.size ?? "m";
+                const cls =
+                  size === "l"
+                    ? "col-span-2 row-span-2 sm:col-span-4 sm:row-span-3"
+                    : size === "s"
+                    ? "col-span-1 row-span-1 sm:col-span-2 sm:row-span-2"
+                    : "col-span-1 row-span-2 sm:col-span-2 sm:row-span-3";
+                return (
+                  <div key={b.src} className={`relative overflow-hidden border hairline ${cls}`}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={b.src}
+                      alt=""
+                      loading="lazy"
+                      className="absolute inset-0 h-full w-full object-cover opacity-85 transition duration-700 hover:scale-[1.02] hover:opacity-100"
+                    />
+                  </div>
+                );
+              })}
             </div>
           </Reveal>
         </section>

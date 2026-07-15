@@ -218,10 +218,25 @@
     }
   },
   "bts": [
-    "/bts/01.jpg",
-    "/bts/02.jpg",
-    "/bts/04.jpg",
-    "/bts/05.jpg",
-    "/bts/06.jpg"
+    {
+      "src": "/bts/01.jpg",
+      "size": "m"
+    },
+    {
+      "src": "/bts/02.jpg",
+      "size": "l"
+    },
+    {
+      "src": "/bts/04.jpg",
+      "size": "m"
+    },
+    {
+      "src": "/bts/05.jpg",
+      "size": "l"
+    },
+    {
+      "src": "/bts/06.jpg",
+      "size": "l"
+    }
   ]
 }

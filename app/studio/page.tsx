@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Diamonds } from "@/components/ui";
 
 /* ------------------------------------------------------------------
@@ -326,6 +326,25 @@ export default function Studio() {
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
   const [saved, setSaved] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  // כניסה אוטומטית אם כבר התחברת מהמחשב הזה
+  useEffect(() => {
+    const pw = localStorage.getItem("take-studio-pw");
+    if (pw) {
+      setPassword(pw);
+      (async () => {
+        setBusy(true);
+        try {
+          const res = await fetch("/api/admin", { headers: { "x-admin-password": pw } });
+          if (res.ok) setContent((await res.json()).content);
+          else localStorage.removeItem("take-studio-pw");
+        } finally {
+          setBusy(false);
+        }
+      })();
+    }
+  }, []);
 
   async function login(e?: React.FormEvent) {
     e?.preventDefault();
@@ -347,6 +366,7 @@ export default function Studio() {
         return;
       }
       const data = await res.json();
+      localStorage.setItem("take-studio-pw", pw);
       setContent(data.content);
     } catch {
       setMsg("שגיאת רשת — בדוק חיבור ונסה שוב");
@@ -388,6 +408,7 @@ export default function Studio() {
           <p className="mt-2 text-sm text-[var(--muted)]">מסך ניהול התוכן של האתר</p>
         </div>
         <form onSubmit={login} className="flex w-full flex-col gap-3">
+          <input type="text" name="username" autoComplete="username" defaultValue="studio" className="hidden" aria-hidden />
           <input
             className={`${inputCls} text-center`}
             type="password"
@@ -409,6 +430,52 @@ export default function Studio() {
   /* ---------- מסך עריכה ---------- */
   const links = content.links as Json;
   const sessions = content.sessions as Json[];
+  const btsList = ((content.bts as Json[]) ?? []) as { src: string; size?: string }[];
+
+  function setBts(next: { src: string; size?: string }[]) {
+    setContent({ ...content, bts: next });
+  }
+
+  function moveBts(i: number, dir: -1 | 1) {
+    const j = i + dir;
+    if (j < 0 || j >= btsList.length) return;
+    const next = [...btsList];
+    [next[i], next[j]] = [next[j], next[i]];
+    setBts(next);
+  }
+
+  async function uploadImage(file: File) {
+    setBusy(true);
+    setMsg("");
+    try {
+      // הקטנה חכמה בדפדפן לפני העלאה
+      const img = document.createElement("img");
+      img.src = URL.createObjectURL(file);
+      await new Promise((ok, err) => ((img.onload = ok), (img.onerror = err)));
+      const scale = Math.min(1, 1800 / Math.max(img.width, img.height));
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.round(img.width * scale);
+      canvas.height = Math.round(img.height * scale);
+      canvas.getContext("2d")!.drawImage(img, 0, 0, canvas.width, canvas.height);
+      const dataUrl = canvas.toDataURL("image/jpeg", 0.82);
+      const base64 = dataUrl.split(",")[1];
+      const res = await fetch("/api/admin", {
+        method: "PUT",
+        headers: { "x-admin-password": password, "content-type": "application/json" },
+        body: JSON.stringify({ name: file.name.replace(/\.[^.]+$/, "") + ".jpg", dataBase64: base64 }),
+      });
+      if (!res.ok) throw new Error(await res.text());
+      const { path } = await res.json();
+      setBts([...btsList, { src: path, size: "m" }]);
+      setMsg("התמונה הועלתה! עכשיו לחץ \"שמור ופרסם\" כדי שתופיע באתר.");
+      setSaved(true);
+    } catch {
+      setMsg("שגיאה בהעלאת התמונה");
+      setSaved(false);
+    } finally {
+      setBusy(false);
+    }
+  }
 
   return (
     <main className="mx-auto w-full max-w-3xl px-6 pb-32 pt-10">
@@ -422,9 +489,17 @@ export default function Studio() {
             </p>
           </div>
         </div>
-        <button className={btnCls} onClick={save} disabled={busy}>
-          {busy ? "שומר..." : "שמור ופרסם"}
-        </button>
+        <div className="flex items-center gap-4">
+          <button
+            className="text-xs text-[var(--muted)] underline-offset-4 hover:underline"
+            onClick={() => { localStorage.removeItem("take-studio-pw"); location.reload(); }}
+          >
+            התנתקות
+          </button>
+          <button className={btnCls} onClick={save} disabled={busy}>
+            {busy ? "שומר..." : "שמור ופרסם"}
+          </button>
+        </div>
       </header>
 
       {msg && (
@@ -497,6 +572,52 @@ export default function Studio() {
           ))}
         </div>
       ))}
+
+      <h2 className="label mb-3 mt-14">גלריית מאחורי הקלעים</h2>
+      <div className={cardCls}>
+        <p className="mb-4 text-xs text-[var(--muted)]">
+          סדר, גודל בפריים, הוספה ומחיקה. שינויים נשמרים רק אחרי "שמור ופרסם".
+        </p>
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+          {btsList.map((b, i) => (
+            <div key={b.src + i} className="rounded-xl border border-[var(--line)] p-3">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={b.src} alt="" className="h-32 w-full rounded-lg object-cover" />
+              <div className="mt-3 flex items-center justify-between gap-2">
+                <select
+                  className="rounded-lg border border-[var(--line)] bg-transparent px-2 py-1.5 text-xs text-[var(--ink)]"
+                  value={b.size ?? "m"}
+                  onChange={(e) => setBts(btsList.map((x, j) => (j === i ? { ...x, size: e.target.value } : x)))}
+                >
+                  <option value="s">קטן</option>
+                  <option value="m">בינוני</option>
+                  <option value="l">גדול (רוחב)</option>
+                </select>
+                <div className="flex items-center gap-1.5">
+                  <button title="הקדם" className="rounded-lg border border-[var(--line)] px-2.5 py-1.5 text-xs hover:border-[var(--ink)]" onClick={() => moveBts(i, -1)}>→</button>
+                  <button title="אחרה" className="rounded-lg border border-[var(--line)] px-2.5 py-1.5 text-xs hover:border-[var(--ink)]" onClick={() => moveBts(i, 1)}>←</button>
+                  <button className="rounded-lg border border-red-500/40 px-2.5 py-1.5 text-xs text-red-400 hover:border-red-400" onClick={() => { if (confirm("להסיר את התמונה מהגלריה?")) setBts(btsList.filter((_, j) => j !== i)); }}>✕</button>
+                </div>
+              </div>
+            </div>
+          ))}
+          <button
+            className="flex h-full min-h-44 flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-[var(--line)] text-sm text-[var(--muted)] transition hover:border-[var(--ink)] hover:text-[var(--ink)]"
+            onClick={() => fileRef.current?.click()}
+            disabled={busy}
+          >
+            <span className="text-2xl">+</span>
+            {busy ? "מעלה..." : "העלאת תמונה"}
+          </button>
+          <input
+            ref={fileRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadImage(f); e.target.value = ""; }}
+          />
+        </div>
+      </div>
 
       {content.texts ? (
         <>

@@ -64,3 +64,23 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: String(e) }, { status: 500 });
   }
 }
+
+/** Upload an image (base64) into public/bts/ via a GitHub commit. */
+export async function PUT(req: NextRequest) {
+  if (!authorized(req)) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  const { token, repo } = env();
+  try {
+    const { name, dataBase64 } = await req.json();
+    const safe = String(name).toLowerCase().replace(/[^a-z0-9.]+/g, "-").replace(/-+/g, "-");
+    const path = `public/bts/${Date.now().toString(36)}-${safe}`;
+    const res = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`, {
+      method: "PUT",
+      headers: { Authorization: `Bearer ${token}`, Accept: "application/vnd.github+json" },
+      body: JSON.stringify({ message: `Upload ${safe} via TAKE studio`, content: dataBase64 }),
+    });
+    if (!res.ok) throw new Error(`GitHub upload failed: ${res.status} ${await res.text()}`);
+    return NextResponse.json({ path: path.replace("public", "") });
+  } catch (e) {
+    return NextResponse.json({ error: String(e) }, { status: 500 });
+  }
+}
