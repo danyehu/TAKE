@@ -2,7 +2,7 @@ import Link from "next/link";
 import { dict, type Lang } from "@/lib/i18n";
 import { sessions, links, bts, btsSpan, buttons, resolveBtnUrl, ytId, type Session, type Btn } from "@/lib/content";
 import { getLatestVideo } from "@/lib/latest";
-import { Diamonds, MobileMenu, Reveal, YouTube } from "@/components/ui";
+import { ContactForm, Diamonds, MobileMenu, Reveal, YouTube } from "@/components/ui";
 
 function BtnLink({ b, lang, latestId }: { b: Btn; lang: Lang; latestId?: string }) {
   const url = resolveBtnUrl(b.url, latestId);
@@ -304,11 +304,7 @@ export async function Home({ lang }: { lang: Lang }) {
           <Diamonds className="mx-auto h-6 w-auto text-[var(--muted)]" />
           <h2 className="display mt-8 text-3xl sm:text-4xl">{t.artists.title}</h2>
           <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-[var(--muted)]">{t.artists.p}</p>
-          <div className="mt-10 flex flex-wrap justify-center gap-4">
-            {(buttons.artists ?? []).map((b, i) => (
-              <BtnLink key={i} b={b} lang={lang} />
-            ))}
-          </div>
+          <ContactForm email={links.email} labels={t.contactForm} />
           <p className="mt-12 text-sm text-[var(--muted)]">{t.contact.p}</p>
         </Reveal>
       </section>

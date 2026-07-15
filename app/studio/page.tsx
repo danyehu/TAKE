@@ -120,6 +120,7 @@ const SECTION_LABELS: Record<string, string> = {
   contact: "צרו קשר",
   footer: "פוטר",
   bts: "מאחורי הקלעים",
+  contactForm: "טופס יצירת קשר",
   kicker: "שורת פתיח קטנה",
   tagline: "המשפט הראשי",
   watch: "כפתור צפייה",

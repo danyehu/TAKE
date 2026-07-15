@@ -130,6 +130,14 @@
         "label": "Behind the TAKE",
         "title": "A glimpse into the room",
         "p": "Before the first note — the cameras, the walls, the people and the quiet work that make a TAKE."
+      },
+      "contactForm": {
+        "name": "Your name",
+        "email": "Your email",
+        "message": "Your message",
+        "send": "Send",
+        "sent": "Thank you — we got it. We read everything.",
+        "error": "Something went wrong — please try again or email us directly."
       }
     },
     "he": {
@@ -214,6 +222,14 @@
         "label": "מאחורי הקלעים",
         "title": "הצצה אל תוך החדר",
         "p": "רגע לפני הצליל הראשון — המצלמות, הקירות, האנשים והעבודה השקטה שמהם נולד טֵיְיק."
+      },
+      "contactForm": {
+        "name": "השם שלך",
+        "email": "האימייל שלך",
+        "message": "ההודעה שלך",
+        "send": "שליחה",
+        "sent": "תודה — קיבלנו. אנחנו קוראים הכל.",
+        "error": "משהו השתבש — נסו שוב או כתבו לנו למייל."
       }
     }
   },

@@ -188,3 +188,59 @@ export function SmoothScroll() {
   }, []);
   return null;
 }
+
+/* טופס יצירת קשר — שולח למייל דרך FormSubmit, בלי לפתוח אפליקציית מייל */
+export function ContactForm({
+  email,
+  labels,
+}: {
+  email: string;
+  labels: { name: string; email: string; message: string; send: string; sent: string; error: string };
+}) {
+  const [state, setState] = useState<"idle" | "busy" | "sent" | "error">("idle");
+
+  async function submit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const data = Object.fromEntries(new FormData(form).entries());
+    setState("busy");
+    try {
+      const res = await fetch(`https://formsubmit.co/ajax/${email}`, {
+        method: "POST",
+        headers: { "content-type": "application/json", accept: "application/json" },
+        body: JSON.stringify({ ...data, _subject: "פנייה חדשה מאתר TAKE" }),
+      });
+      if (!res.ok) throw new Error();
+      form.reset();
+      setState("sent");
+    } catch {
+      setState("error");
+    }
+  }
+
+  const inp =
+    "w-full border hairline bg-white/[0.03] px-4 py-3.5 text-sm text-[var(--ink)] outline-none transition placeholder:text-[var(--muted)] focus:border-[var(--ink)]/60";
+
+  if (state === "sent") {
+    return (
+      <div className="mx-auto mt-10 max-w-md border hairline px-6 py-8">
+        <Diamonds className="mx-auto h-5 w-auto text-[var(--muted)]" />
+        <p className="mt-4 text-[var(--muted)]">{labels.sent}</p>
+      </div>
+    );
+  }
+
+  return (
+    <form onSubmit={submit} className="mx-auto mt-10 flex max-w-md flex-col gap-3 text-start">
+      <div className="grid gap-3 sm:grid-cols-2">
+        <input name="name" required placeholder={labels.name} className={inp} />
+        <input name="email" type="email" required placeholder={labels.email} className={inp} />
+      </div>
+      <textarea name="message" required placeholder={labels.message} className={`${inp} min-h-32`} />
+      <button type="submit" disabled={state === "busy"} className="btn btn-primary self-center disabled:opacity-50">
+        {state === "busy" ? "..." : labels.send}
+      </button>
+      {state === "error" && <p className="text-center text-sm text-red-400">{labels.error}</p>}
+    </form>
+  );
+}
