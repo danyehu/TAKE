@@ -6,9 +6,14 @@ import { SITE_URL } from "@/lib/site";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: { default: "טֵיְיק — לייב סשנים אינטימיים מירושלים", template: "%s · טֵיְיק" },
+  title: { default: "טייק TAKE — לייב סשנים מירושלים", template: "%s · טייק TAKE" },
   description:
-    "טֵיְיק הוא פרויקט לייב סשנים מוזיקלי־קולנועי עצמאי, מצולם במפעל בירושלים. ביצועים חיים. רגעים אמיתיים. טֵיְיק אחד.",
+    "טייק (TAKE) — לייב סשנים אינטימיים וקולנועיים, מצולמים במפעל בירושלים. עיבודים מיוחדים, מוזיקה חיה, רגעים אמיתיים. טייק אחד.",
+  keywords: [
+    "טייק", "טייק לייב סשן", "לייב סשן", "לייב סשנים", "TAKE",
+    "TAKE live sessions", "מוזיקה חיה", "מוזיקה חיה ירושלים", "המפעל ירושלים",
+    "הופעות אינטימיות", "אמנים ישראלים", "live session",
+  ],
   alternates: { canonical: "/he", languages: { en: "/", he: "/he" } },
   openGraph: {
     title: "טֵיְיק — לייב סשנים אינטימיים מירושלים",
@@ -16,6 +21,7 @@ export const metadata: Metadata = {
     url: `${SITE_URL}/he`,
     siteName: "TAKE",
     type: "website",
+    images: [{ url: `${SITE_URL}/bts/02.jpg`, width: 1800, height: 1200 }],
   },
 };
 

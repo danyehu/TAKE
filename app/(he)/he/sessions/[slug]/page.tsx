@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { sessions, released } from "@/lib/content";
+import { sessions, released, ytId } from "@/lib/content";
+import { SITE_URL } from "@/lib/site";
 import { SessionView } from "@/components/site";
 
 export function generateStaticParams() {
@@ -22,5 +23,26 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
   const { slug } = await params;
   const s = sessions.find((x) => x.slug === slug && x.status === "released");
   if (!s) notFound();
-  return <SessionView s={s} lang="he" />;
+  const vid = ytId(s.youtubeId);
+  const jsonLd = vid
+    ? {
+        "@context": "https://schema.org",
+        "@type": "VideoObject",
+        name: `${s.artistHe} — ${s.titleHe} (טייק לייב סשן | TAKE Live Session)`,
+        description: s.descriptionHe,
+        thumbnailUrl: `https://i.ytimg.com/vi/${vid}/maxresdefault.jpg`,
+        uploadDate: s.date,
+        embedUrl: `https://www.youtube-nocookie.com/embed/${vid}`,
+        url: `${SITE_URL}/he/sessions/${s.slug}`,
+        inLanguage: "he",
+      }
+    : null;
+  return (
+    <>
+      {jsonLd && (
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      )}
+      <SessionView s={s} lang="he" />
+    </>
+  );
 }
