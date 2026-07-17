@@ -1,14 +1,19 @@
+"use client";
+
 import Link from "next/link";
-import { cookies, headers } from "next/headers";
+import { useEffect, useState } from "react";
 import { dict } from "@/lib/i18n";
 import { Diamonds } from "@/components/ui";
 
-export default async function NotFound() {
-  const [c, h] = await Promise.all([cookies(), headers()]);
-  const lang =
-    c.get("take-lang")?.value ??
-    (h.get("x-vercel-ip-country") === "IL" ? "he" : "en");
-  const he = lang === "he";
+export default function NotFound() {
+  const [he, setHe] = useState(false);
+
+  useEffect(() => {
+    const cookieLang = document.cookie.match(/take-lang=(\w+)/)?.[1];
+    const browserHe = (navigator.language || "").toLowerCase().startsWith("he");
+    setHe(cookieLang ? cookieLang === "he" : browserHe);
+  }, []);
+
   const t = he ? dict.he.notFound : dict.en.notFound;
 
   return (
