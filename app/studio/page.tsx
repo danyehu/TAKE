@@ -188,28 +188,42 @@ function CollageCanvas({
     setSel(j);
   }
 
-  /* סידור אקראי על הגריד */
+  /* סידור אקראי: קולאז' שורות נקי, צמוד לגריד, בלי חפיפות */
   function scatter() {
     const shuffled = [...items].sort(() => Math.random() - 0.5);
-    let x = 0, y = 0, rowH = 0;
-    const placed = shuffled.map((b) => {
-      const ratio = b.ratio ?? 1.5;
-      const opts = ratio < 0.9 ? [16, 20, 24] : [24, 28, 32];
-      const w = opts[Math.floor(Math.random() * opts.length)];
-      const h = w / ratio;
-      if (x + w > CANVAS_W) {
-        x = 0;
-        y += snap(rowH * 0.72); // חפיפה קלה בין שורות, בקווי גריד
-        rowH = 0;
+    const heights = [24, 32, 28, 20];
+    let y = 0;
+    let idx = 0;
+    let hIdx = Math.floor(Math.random() * heights.length);
+    const placed: CanvasItem[] = [];
+    while (idx < shuffled.length) {
+      const rowH = heights[hIdx % heights.length];
+      hIdx++;
+      let x = 0;
+      const row: CanvasItem[] = [];
+      while (idx < shuffled.length) {
+        const b = shuffled[idx];
+        const ratio = b.ratio ?? 1.5;
+        const w = Math.max(GRID * 2, Math.round((rowH * ratio) / GRID) * GRID);
+        if (x + w > CANVAS_W && row.length > 0) break;
+        row.push({ ...b, x, y, w });
+        x += w + GRID;
+        idx++;
       }
-      const jitter = Math.random() < 0.5 ? 0 : GRID;
-      const item = { ...b, x: snap(x), y: Math.max(0, y + jitter), w };
-      x += w + GRID;
-      rowH = Math.max(rowH, h);
-      return item;
-    });
-    const needed = Math.max(...placed.map((p) => (p.y ?? 0) + (p.w ?? 20) / (p.ratio ?? 1.5))) + GRID;
-    onCanvasH(Math.max(30, Math.ceil(needed / GRID) * GRID));
+      // מרווח שווה: פיזור העודף בין התמונות בשורה
+      const used = row.reduce((a, r) => a + (r.w ?? 0), 0);
+      const slots = row.length + 1;
+      const spare = Math.max(0, CANVAS_W - used);
+      const gap = Math.floor(spare / slots / GRID) * GRID;
+      let cx = gap;
+      row.forEach((r) => {
+        r.x = cx;
+        cx += (r.w ?? 0) + gap + GRID;
+      });
+      placed.push(...row);
+      y += rowH + GRID;
+    }
+    onCanvasH(Math.max(30, Math.ceil(y / GRID) * GRID));
     onChange(placed);
   }
 
