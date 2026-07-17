@@ -245,13 +245,12 @@ export function ContactForm({
   );
 }
 
-/* אינטרו מותגי — הלוגו המונפש בכניסה הראשונה לאתר, נמוג אל הדף */
+/* אינטרו מותגי — הלוגו המונפש מעל האתר, מסתיים בזום פנימה שחושף את הדף */
 export function Intro() {
-  const [phase, setPhase] = useState<"show" | "fade" | "gone">("show");
+  const [phase, setPhase] = useState<"show" | "zoom" | "gone">("show");
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
-    // פעם אחת לכל ביקור; דילוג למי שמעדיף פחות תנועה
     const seen = sessionStorage.getItem("take-intro");
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (seen || reduced) {
@@ -259,35 +258,40 @@ export function Intro() {
       return;
     }
     sessionStorage.setItem("take-intro", "1");
-    videoRef.current?.play().catch(() => setPhase("fade"));
-    const safety = setTimeout(() => setPhase("fade"), 2600);
+    videoRef.current?.play().catch(() => setPhase("zoom"));
+    const safety = setTimeout(() => setPhase("zoom"), 3600);
     return () => clearTimeout(safety);
   }, []);
 
   useEffect(() => {
-    if (phase === "fade") {
-      const t = setTimeout(() => setPhase("gone"), 650);
+    if (phase === "zoom") {
+      const t = setTimeout(() => setPhase("gone"), 800);
       return () => clearTimeout(t);
     }
   }, [phase]);
 
   if (phase === "gone") return null;
+  const zooming = phase === "zoom";
 
   return (
-    <div
-      aria-hidden
-      className={`fixed inset-0 z-[999] flex items-center justify-center bg-[#0b0b0c] transition-opacity duration-[650ms] ease-out ${
-        phase === "fade" ? "opacity-0" : "opacity-100"
-      }`}
-    >
+    <div aria-hidden className="fixed inset-0 z-[999] overflow-hidden">
+      {/* עמעום עדין של האתר שמאחור — נעלם עם הזום */}
+      <div
+        className={`absolute inset-0 bg-[#0b0b0c]/80 backdrop-blur-[3px] transition-opacity duration-700 ease-out ${
+          zooming ? "opacity-0" : "opacity-100"
+        }`}
+      />
+      {/* הלוגו המונפש — שחור הופך שקוף דרך מיזוג screen */}
       <video
         ref={videoRef}
         src="/intro.mp4"
         muted
         playsInline
         preload="auto"
-        onEnded={() => setPhase("fade")}
-        className="h-full w-full object-cover"
+        onEnded={() => setPhase("zoom")}
+        className={`absolute inset-0 h-full w-full object-cover mix-blend-screen transition-all duration-[800ms] ease-in ${
+          zooming ? "scale-[2.4] opacity-0" : "scale-100 opacity-100"
+        }`}
       />
     </div>
   );
