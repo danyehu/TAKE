@@ -244,3 +244,51 @@ export function ContactForm({
     </form>
   );
 }
+
+/* אינטרו מותגי — הלוגו המונפש בכניסה הראשונה לאתר, נמוג אל הדף */
+export function Intro() {
+  const [phase, setPhase] = useState<"show" | "fade" | "gone">("show");
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    // פעם אחת לכל ביקור; דילוג למי שמעדיף פחות תנועה
+    const seen = sessionStorage.getItem("take-intro");
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (seen || reduced) {
+      setPhase("gone");
+      return;
+    }
+    sessionStorage.setItem("take-intro", "1");
+    videoRef.current?.play().catch(() => setPhase("fade"));
+    const safety = setTimeout(() => setPhase("fade"), 2600);
+    return () => clearTimeout(safety);
+  }, []);
+
+  useEffect(() => {
+    if (phase === "fade") {
+      const t = setTimeout(() => setPhase("gone"), 650);
+      return () => clearTimeout(t);
+    }
+  }, [phase]);
+
+  if (phase === "gone") return null;
+
+  return (
+    <div
+      aria-hidden
+      className={`fixed inset-0 z-[999] flex items-center justify-center bg-[#0b0b0c] transition-opacity duration-[650ms] ease-out ${
+        phase === "fade" ? "opacity-0" : "opacity-100"
+      }`}
+    >
+      <video
+        ref={videoRef}
+        src="/intro.mp4"
+        muted
+        playsInline
+        preload="auto"
+        onEnded={() => setPhase("fade")}
+        className="h-full w-full object-cover"
+      />
+    </div>
+  );
+}
