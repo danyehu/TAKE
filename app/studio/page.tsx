@@ -111,7 +111,7 @@ function Field({
 
 
 /* עורך קולאז' חופשי, כפוף לגריד, עם קנבס מתרחב */
-type CanvasItem = { src: string; ratio?: number; x?: number; y?: number; w?: number; credit?: string; m?: number };
+type CanvasItem = { src: string; ratio?: number; x?: number; y?: number; w?: number; credit?: string; m?: number; mx?: number; my?: number; mw?: number };
 const CANVAS_W = 100;
 const GRID = 4;
 
@@ -867,40 +867,36 @@ export default function Studio() {
           onCanvasH={(h) => setContent({ ...content, bts: btsList, btsCanvasH: h })}
         />
         <details className="mt-5">
-          <summary className="cursor-pointer text-xs text-[var(--muted)]">תצוגת נייד: שליטה בסדר (חצים על כל תמונה)</summary>
-          {(() => {
-            const ordered = btsList
-              .map((b, gi) => ({ b, gi }))
-              .sort((a, z) => ((a.b.m ?? a.gi) as number) - ((z.b.m ?? z.gi) as number));
-            function moveMobile(pos: number, dir: -1 | 1) {
-              const t = pos + dir;
-              if (t < 0 || t >= ordered.length) return;
-              const seq = [...ordered];
-              [seq[pos], seq[t]] = [seq[t], seq[pos]];
-              const next = [...btsList];
-              seq.forEach((entry, idx) => {
-                next[entry.gi] = { ...next[entry.gi], m: idx };
-              });
-              setBts(next);
-            }
-            return (
-              <div className="mx-auto mt-3 w-60 rounded-[1.6rem] border border-[var(--line)] p-2.5">
-                <div className="columns-2 gap-1.5">
-                  {ordered.map((entry, pos) => (
-                    <div key={entry.b.src + pos} className="relative mb-1.5 break-inside-avoid">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={entry.b.src} alt="" className="w-full rounded-sm" />
-                      <div className="absolute inset-x-0 bottom-0 flex justify-between bg-black/50 px-1 py-0.5">
-                        <button className="px-1 text-xs" onClick={() => moveMobile(pos, -1)}>↑</button>
-                        <span className="text-[0.55rem] text-[var(--muted)]">{pos + 1}</span>
-                        <button className="px-1 text-xs" onClick={() => moveMobile(pos, 1)}>↓</button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            );
-          })()}
+          <summary className="cursor-pointer text-xs text-[var(--muted)]">פריסת נייד: עריכה ידנית מלאה (גרירה, גודל, אקראי)</summary>
+          <div className="mx-auto mt-3 w-72">
+            <CollageCanvas
+              items={btsList.map((b) => ({
+                ...b,
+                x: b.mx ?? ((b.m ?? 0) % 2) * 52,
+                y: b.my ?? Math.floor((b.m ?? 0) / 2) * 40,
+                w: b.mw ?? 44,
+              }))}
+              canvasH={Number(content.btsCanvasHM ?? 170)}
+              onChange={(next) =>
+                setBts(
+                  next.map((n, i) => ({
+                    ...btsList[i],
+                    ...n,
+                    x: btsList[i]?.x,
+                    y: btsList[i]?.y,
+                    w: btsList[i]?.w,
+                    mx: n.x,
+                    my: n.y,
+                    mw: n.w,
+                  }))
+                )
+              }
+              onCanvasH={(h) => setContent({ ...content, bts: btsList, btsCanvasHM: h })}
+            />
+            <p className="mt-2 text-[0.6rem] text-[var(--muted)]/70">
+              הפריסה כאן נפרדת מהדסקטופ ותוצג בטלפונים בדיוק כפי שסידרת.
+            </p>
+          </div>
         </details>
 
         <div className="mt-4 flex items-center gap-3">

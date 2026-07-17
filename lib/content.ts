@@ -23,10 +23,12 @@ export const upcoming = sessions.filter((s) => s.status === "coming-soon");
 export const latest = released[0];
 export const links = data.links;
 export const youtubeChannelId = data.youtubeChannelId;
-export type BtsItem = { src: string; ratio?: number; x?: number; y?: number; w?: number; credit?: string; m?: number };
+export type BtsItem = { src: string; ratio?: number; x?: number; y?: number; w?: number; credit?: string; m?: number; mx?: number; my?: number; mw?: number };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const BTS_CANVAS = { w: 100, h: ((data as any).btsCanvasH ?? 50) as number };
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const BTS_CANVAS_M = { w: 100, h: ((data as any).btsCanvasHM ?? 170) as number };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const bts: BtsItem[] = ((data as any).bts ?? []).map((x: unknown, i: number) => {
@@ -61,3 +63,5 @@ export function resolveBtnUrl(url: string, latestVideoId?: string): string {
   }
   return url;
 }
+
+export const btsHasMobileLayout = bts.some((b) => typeof b.mw === "number");

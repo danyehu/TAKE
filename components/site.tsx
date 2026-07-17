@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { dict, type Lang } from "@/lib/i18n";
-import { sessions, released, links, bts, BTS_CANVAS, buttons, resolveBtnUrl, ytId, type Session, type Btn } from "@/lib/content";
+import { sessions, released, links, bts, BTS_CANVAS, BTS_CANVAS_M, btsHasMobileLayout, buttons, resolveBtnUrl, ytId, type Session, type Btn } from "@/lib/content";
 import { YtIcon, SpotifyIcon, AppleIcon, InstaIcon, FbIcon } from "@/components/icons";
 import { getLatestVideo } from "@/lib/latest";
 import { ContactForm, Diamonds, MobileMenu, Reveal, YouTube } from "@/components/ui";
@@ -294,15 +294,43 @@ export async function Home({ lang }: { lang: Lang }) {
           <Reveal className="mt-12">
             <div dir="ltr" className="px-6 sm:px-12">
               {/* מובייל: שני טורים, יחס מקורי מלא */}
-              <div className="columns-2 gap-3 sm:hidden [&>img]:mb-3">
-                {[...bts]
-                  .map((b, i) => ({ ...b, _i: i }))
-                  .sort((a, b) => (a.m ?? a._i) - (b.m ?? b._i))
-                  .map((b) => (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img key={b.src} src={b.src} alt={b.credit ? `צילום: ${b.credit}` : ""} loading="lazy" className="w-full break-inside-avoid border hairline" />
-                  ))}
-              </div>
+              {btsHasMobileLayout ? (
+                <div
+                  className="relative w-full sm:hidden"
+                  style={{ aspectRatio: `${BTS_CANVAS_M.w} / ${BTS_CANVAS_M.h}` }}
+                >
+                  {bts.map((b, i) => {
+                    const w = b.mw ?? 44;
+                    const h = w / (b.ratio ?? 1.5);
+                    return (
+                      <div
+                        key={b.src + i}
+                        className="absolute overflow-hidden border hairline shadow-[0_10px_30px_rgba(0,0,0,0.45)]"
+                        style={{
+                          left: `${b.mx ?? 0}%`,
+                          top: `${((b.my ?? 0) / BTS_CANVAS_M.h) * 100}%`,
+                          width: `${w}%`,
+                          height: `${(h / BTS_CANVAS_M.h) * 100}%`,
+                          zIndex: i + 1,
+                        }}
+                      >
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={b.src} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover" />
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="columns-2 gap-3 sm:hidden [&>img]:mb-3">
+                  {[...bts]
+                    .map((b, i) => ({ ...b, _i: i }))
+                    .sort((a, b) => (a.m ?? a._i) - (b.m ?? b._i))
+                    .map((b) => (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img key={b.src} src={b.src} alt={b.credit ? `צילום: ${b.credit}` : ""} loading="lazy" className="w-full break-inside-avoid border hairline" />
+                    ))}
+                </div>
+              )}
               {/* דסקטופ: קולאז' חופשי לפי המיקומים מהסטודיו */}
               <div
                 className="relative hidden w-full sm:block"
