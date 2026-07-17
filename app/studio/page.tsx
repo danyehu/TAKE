@@ -15,6 +15,8 @@ const FIELD_LABELS: Record<string, string> = {
   instagram: "אינסטגרם",
   appleArtist: "עמוד אמן באפל מיוזיק",
   facebook: "עמוד פייסבוק",
+  audienceForm: "כתובת רישום קהל (Google Apps Script, ראה הוראות)",
+  audience: "פופ-אפ הרשמת קהל",
   spotifyArtist: "עמוד אמן בספוטיפיי",
   email: "אימייל ליצירת קשר",
   youtubeChannelId: "מזהה ערוץ יוטיוב (לסרטון האחרון בדף הבית)",

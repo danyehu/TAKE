@@ -331,3 +331,105 @@ export function Intro() {
     </div>
   );
 }
+
+/* פופ-אפ הרשמת קהל, מופיע פעם אחת כשמגיעים לקטלוג הסשנים */
+export function AudiencePopup({
+  labels,
+  formUrl,
+  fallbackEmail,
+  rtl,
+}: {
+  labels: { title: string; p: string; placeholder: string; cta: string; sent: string; error: string };
+  formUrl?: string;
+  fallbackEmail: string;
+  rtl: boolean;
+}) {
+  const [show, setShow] = useState(false);
+  const [state, setState] = useState<"idle" | "busy" | "sent" | "error">("idle");
+
+  useEffect(() => {
+    if (sessionStorage.getItem("take-audience")) return;
+    const target = document.getElementById("sessions");
+    if (!target) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          setTimeout(() => setShow(true), 1200);
+          sessionStorage.setItem("take-audience", "1");
+          io.disconnect();
+        }
+      },
+      { threshold: 0.35 }
+    );
+    io.observe(target);
+    return () => io.disconnect();
+  }, []);
+
+  async function submit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const email = String(new FormData(e.currentTarget).get("email") ?? "");
+    setState("busy");
+    try {
+      if (formUrl) {
+        await fetch(formUrl, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "content-type": "application/x-www-form-urlencoded" },
+          body: new URLSearchParams({ email, lang: rtl ? "he" : "en", source: "site-popup" }),
+        });
+      } else {
+        const res = await fetch(`https://formsubmit.co/ajax/${fallbackEmail}`, {
+          method: "POST",
+          headers: { "content-type": "application/json", accept: "application/json" },
+          body: JSON.stringify({ email, _subject: `הרשמה חדשה לקהל: ${email}`, _template: "table" }),
+        });
+        if (!res.ok) throw new Error();
+      }
+      setState("sent");
+      setTimeout(() => setShow(false), 2600);
+    } catch {
+      setState("error");
+    }
+  }
+
+  if (!show) return null;
+
+  return (
+    <div
+      dir={rtl ? "rtl" : "ltr"}
+      className="menu-overlay fixed inset-x-4 bottom-6 z-[80] mx-auto max-w-md rounded-2xl border border-[var(--line)] bg-[#131315]/95 p-6 shadow-[0_30px_80px_rgba(0,0,0,0.6)] backdrop-blur-md sm:inset-x-auto sm:bottom-8 ltr:sm:right-8 rtl:sm:left-8"
+    >
+      <button
+        aria-label="Close"
+        onClick={() => setShow(false)}
+        className="absolute top-3 text-lg text-[var(--muted)] transition-colors hover:text-[var(--ink)] ltr:right-4 rtl:left-4"
+      >
+        ✕
+      </button>
+      <Diamonds className="h-4 w-auto text-[var(--muted)]" />
+      <h3 className="display mt-3 text-xl">{labels.title}</h3>
+      {state === "sent" ? (
+        <p className="mt-2 text-sm text-[var(--muted)]">{labels.sent}</p>
+      ) : (
+        <>
+          <p className="mt-2 text-sm leading-relaxed text-[var(--muted)]">{labels.p}</p>
+          <form onSubmit={submit} className="mt-4 flex gap-2">
+            <input
+              name="email"
+              type="email"
+              required
+              autoComplete="email"
+              inputMode="email"
+              placeholder={labels.placeholder}
+              className="w-full border hairline bg-white/[0.04] px-4 py-3 text-sm text-[var(--ink)] outline-none placeholder:text-[var(--muted)] focus:border-[var(--ink)]/60"
+            />
+            <button type="submit" disabled={state === "busy"} className="btn btn-primary shrink-0 !px-5 !py-3 disabled:opacity-50">
+              {state === "busy" ? "..." : labels.cta}
+            </button>
+          </form>
+          {state === "error" && <p className="mt-2 text-xs text-red-400">{labels.error}</p>}
+        </>
+      )}
+    </div>
+  );
+}

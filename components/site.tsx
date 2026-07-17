@@ -3,7 +3,7 @@ import { dict, type Lang } from "@/lib/i18n";
 import { sessions, released, links, bts, BTS_CANVAS, BTS_CANVAS_M, btsHasMobileLayout, buttons, resolveBtnUrl, ytId, type Session, type Btn } from "@/lib/content";
 import { YtIcon, SpotifyIcon, AppleIcon, InstaIcon, FbIcon } from "@/components/icons";
 import { getLatestVideo } from "@/lib/latest";
-import { ContactForm, Diamonds, MobileMenu, Reveal, YouTube } from "@/components/ui";
+import { AudiencePopup, ContactForm, Diamonds, MobileMenu, Reveal, YouTube } from "@/components/ui";
 
 function BtnLink({ b, lang, latestId }: { b: Btn; lang: Lang; latestId?: string }) {
   let url = resolveBtnUrl(b.url, latestId);
@@ -370,6 +370,13 @@ export async function Home({ lang }: { lang: Lang }) {
           </Reveal>
         </section>
       )}
+
+      <AudiencePopup
+        labels={t.audience}
+        formUrl={(links as Record<string, string>).audienceForm}
+        fallbackEmail={links.email}
+        rtl={lang === "he"}
+      />
 
       {/* ARTISTS + CONTACT */}
       <section id="contact" className="mx-auto max-w-3xl px-6 py-24 text-center sm:py-32">

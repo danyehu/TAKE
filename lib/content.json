@@ -5,7 +5,8 @@
     "appleArtist": "https://music.apple.com/il/artist/take/1847349204",
     "spotifyArtist": "https://open.spotify.com/artist/6oQgY8rw1xUmzlBRyI8nUI",
     "email": "takelivesessions@gmail.com",
-    "facebook": "https://www.facebook.com/TakeLiveSession"
+    "facebook": "https://www.facebook.com/TakeLiveSession",
+    "audienceForm": "https://script.google.com/macros/s/AKfycbyFirVpiGdJfE0vXeJFv-2YbELXeeNUIq01a0NG7P0iKb_tRJsgbEIkzW-QpTs3Iag_/exec"
   },
   "youtubeChannelId": "UCOWfZo548mTzEoVrb399TcQ",
   "sessions": [
@@ -148,6 +149,14 @@
         "title": "This page was not found",
         "p": "Maybe it is still in rehearsal. Let us get you back to the room.",
         "cta": "Back home"
+      },
+      "audience": {
+        "title": "Want to be in the room next session?",
+        "p": "A handful of seats, as intimate as it looks. Leave your email and we will let you know when signup opens.",
+        "placeholder": "Your email",
+        "cta": "Keep me posted",
+        "sent": "You are on the list. See you in the room.",
+        "error": "Something went wrong, try again"
       }
     },
     "he": {
@@ -249,6 +258,14 @@
         "title": "הדף לא נמצא",
         "p": "אולי הוא עוד בחזרות. בוא נחזור לחדר שבו הכל קורה.",
         "cta": "חזרה לדף הבית"
+      },
+      "audience": {
+        "title": "רוצים להיות הקהל של הסשן הבא?",
+        "p": "מקומות ספורים, אינטימי כמו שאתם רואים. השאירו מייל ונעדכן כשנפתחת הרשמה.",
+        "placeholder": "האימייל שלכם",
+        "cta": "עדכנו אותי",
+        "sent": "נרשמתם. נתראה בחדר.",
+        "error": "משהו השתבש, נסו שוב"
       }
     }
   },
