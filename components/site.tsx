@@ -295,10 +295,13 @@ export async function Home({ lang }: { lang: Lang }) {
             <div dir="ltr" className="px-6 sm:px-12">
               {/* מובייל: שני טורים, יחס מקורי מלא */}
               <div className="columns-2 gap-3 sm:hidden [&>img]:mb-3">
-                {bts.map((b) => (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img key={b.src} src={b.src} alt="" loading="lazy" className="w-full break-inside-avoid border hairline" />
-                ))}
+                {[...bts]
+                  .map((b, i) => ({ ...b, _i: i }))
+                  .sort((a, b) => (a.m ?? a._i) - (b.m ?? b._i))
+                  .map((b) => (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img key={b.src} src={b.src} alt={b.credit ? `צילום: ${b.credit}` : ""} loading="lazy" className="w-full break-inside-avoid border hairline" />
+                  ))}
               </div>
               {/* דסקטופ: קולאז' חופשי לפי המיקומים מהסטודיו */}
               <div
@@ -310,7 +313,7 @@ export async function Home({ lang }: { lang: Lang }) {
                   return (
                     <div
                       key={b.src + i}
-                      className="absolute overflow-hidden border hairline shadow-[0_18px_50px_rgba(0,0,0,0.5)]"
+                      className="group absolute overflow-hidden border hairline shadow-[0_18px_50px_rgba(0,0,0,0.5)]"
                       style={{
                         left: `${b.x}%`,
                         top: `${(b.y! / BTS_CANVAS.h) * 100}%`,
@@ -324,8 +327,13 @@ export async function Home({ lang }: { lang: Lang }) {
                         src={b.src}
                         alt=""
                         loading="lazy"
-                        className="absolute inset-0 h-full w-full object-cover opacity-90 transition duration-700 hover:scale-[1.02] hover:opacity-100"
+                        className="absolute inset-0 h-full w-full object-cover opacity-90 transition-[transform,opacity] duration-500 ease-out group-hover:scale-[1.02] group-hover:opacity-100"
                       />
+                      {b.credit && (
+                        <span className="absolute bottom-2 left-2 rounded-full bg-black/55 px-2.5 py-1 text-[0.58rem] tracking-[0.12em] text-[var(--ink)]/90 opacity-0 backdrop-blur-sm transition-opacity duration-300 group-hover:opacity-100">
+                          📷 {b.credit}
+                        </span>
+                      )}
                     </div>
                   );
                 })}

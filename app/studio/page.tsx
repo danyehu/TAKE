@@ -110,24 +110,31 @@ function Field({
 }
 
 
-/* עורך קולאז' חופשי — גרירה, שינוי גודל ושכבות, כמו קנבה */
-type CanvasItem = { src: string; ratio?: number; x?: number; y?: number; w?: number };
-const CANVAS = { w: 100, h: 50 };
+/* עורך קולאז' חופשי, כפוף לגריד, עם קנבס מתרחב */
+type CanvasItem = { src: string; ratio?: number; x?: number; y?: number; w?: number; credit?: string; m?: number };
+const CANVAS_W = 100;
+const GRID = 4;
 
 function CollageCanvas({
   items,
+  canvasH,
   onChange,
+  onCanvasH,
 }: {
   items: CanvasItem[];
+  canvasH: number;
   onChange: (next: CanvasItem[]) => void;
+  onCanvasH: (h: number) => void;
 }) {
   const boxRef = useRef<HTMLDivElement>(null);
   const [sel, setSel] = useState<number | null>(null);
   const drag = useRef<{ mode: "move" | "resize"; i: number; sx: number; sy: number; ox: number; oy: number; ow: number } | null>(null);
 
+  const snap = (v: number) => Math.round(v / GRID) * GRID;
+
   function unit() {
     const r = boxRef.current!.getBoundingClientRect();
-    return r.width / CANVAS.w; // פיקסלים ליחידת קנבס
+    return r.width / CANVAS_W;
   }
 
   function down(e: React.PointerEvent, i: number, mode: "move" | "resize") {
@@ -149,20 +156,20 @@ function CollageCanvas({
     const b = items[d.i];
     const ratio = b.ratio ?? 1.5;
     let next: CanvasItem;
-    const GRID = 2; // הצמדה לגריד, שומר על סדר
-    const snap = (v: number) => Math.round(v / GRID) * GRID;
     if (d.mode === "move") {
       const w = b.w ?? 20;
-      const h = w / ratio;
       next = {
         ...b,
-        x: snap(Math.min(Math.max(d.ox + dx, 0), CANVAS.w - w)),
-        y: snap(Math.min(Math.max(d.oy + dy, 0), Math.max(0, CANVAS.h - h))),
+        x: snap(Math.min(Math.max(d.ox + dx, 0), CANVAS_W - w)),
+        y: Math.max(0, snap(d.oy + dy)),
       };
     } else {
-      const w = snap(Math.min(Math.max(d.ow + dx, 6), CANVAS.w));
+      const w = snap(Math.min(Math.max(d.ow + dx, 8), CANVAS_W));
       next = { ...b, w };
     }
+    // הקנבס גדל אוטומטית אם יורדים למטה
+    const h = (next.w ?? 20) / ratio;
+    if ((next.y ?? 0) + h > canvasH - 2) onCanvasH(Math.ceil(((next.y ?? 0) + h + 4) / GRID) * GRID);
     onChange(items.map((x, j) => (j === d.i ? next : x)));
   }
 
@@ -181,21 +188,56 @@ function CollageCanvas({
     setSel(j);
   }
 
+  /* סידור אקראי על הגריד */
+  function scatter() {
+    const shuffled = [...items].sort(() => Math.random() - 0.5);
+    let x = 0, y = 0, rowH = 0;
+    const placed = shuffled.map((b) => {
+      const ratio = b.ratio ?? 1.5;
+      const opts = ratio < 0.9 ? [16, 20, 24] : [24, 28, 32];
+      const w = opts[Math.floor(Math.random() * opts.length)];
+      const h = w / ratio;
+      if (x + w > CANVAS_W) {
+        x = 0;
+        y += snap(rowH * 0.72); // חפיפה קלה בין שורות, בקווי גריד
+        rowH = 0;
+      }
+      const jitter = Math.random() < 0.5 ? 0 : GRID;
+      const item = { ...b, x: snap(x), y: Math.max(0, y + jitter), w };
+      x += w + GRID;
+      rowH = Math.max(rowH, h);
+      return item;
+    });
+    const needed = Math.max(...placed.map((p) => (p.y ?? 0) + (p.w ?? 20) / (p.ratio ?? 1.5))) + GRID;
+    onCanvasH(Math.max(30, Math.ceil(needed / GRID) * GRID));
+    onChange(placed);
+  }
+
+  const selItem = sel !== null ? items[sel] : null;
+
   return (
     <div>
-      <p className="mb-2 text-[0.6rem] uppercase tracking-[0.25em] text-[var(--muted)]">
-        ● גרור להזזה · פינה שמאלית-תחתונה לשינוי גודל · לחיצה בוחרת
-      </p>
+      <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+        <p className="text-[0.6rem] uppercase tracking-[0.25em] text-[var(--muted)]">
+          ● הכל נצמד לגריד · גרירה להזזה · פינה שמאלית-תחתונה לגודל
+        </p>
+        <button
+          className="rounded-full border border-[var(--line)] px-4 py-1.5 text-xs text-[var(--muted)] transition hover:border-[var(--ink)] hover:text-[var(--ink)]"
+          onClick={scatter}
+        >
+          🎲 סידור אקראי
+        </button>
+      </div>
       <div
         ref={boxRef}
         dir="ltr"
         onPointerDown={() => setSel(null)}
         className="relative w-full touch-none overflow-hidden rounded-xl border border-dashed border-[var(--ink)]/25 bg-[var(--bg)]"
         style={{
-          aspectRatio: `${CANVAS.w} / ${CANVAS.h}`,
+          aspectRatio: `${CANVAS_W} / ${canvasH}`,
           backgroundImage:
-            "linear-gradient(to right, rgba(244,241,234,0.04) 1px, transparent 1px), linear-gradient(to bottom, rgba(244,241,234,0.04) 1px, transparent 1px)",
-          backgroundSize: "2% 4%",
+            "linear-gradient(to right, rgba(244,241,234,0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(244,241,234,0.05) 1px, transparent 1px)",
+          backgroundSize: `${(GRID / CANVAS_W) * 100}% ${(GRID / canvasH) * 100}%`,
         }}
       >
         {items.map((b, i) => {
@@ -210,9 +252,9 @@ function CollageCanvas({
               }`}
               style={{
                 left: `${b.x}%`,
-                top: `${((b.y ?? 0) / CANVAS.h) * 100}%`,
+                top: `${((b.y ?? 0) / canvasH) * 100}%`,
                 width: `${w}%`,
-                height: `${(h / CANVAS.h) * 100}%`,
+                height: `${(h / canvasH) * 100}%`,
                 zIndex: i + 1,
               }}
             >
@@ -229,10 +271,24 @@ function CollageCanvas({
           );
         })}
       </div>
-      {sel !== null && items[sel] && (
-        <div className="mt-3 flex items-center gap-2">
+      <div className="mt-2 flex items-center gap-2">
+        <button className="rounded-lg border border-[var(--line)] px-3 py-1.5 text-xs text-[var(--muted)] hover:border-[var(--ink)] hover:text-[var(--ink)]" onClick={() => onCanvasH(canvasH + 8)}>
+          + מקום למטה
+        </button>
+        <button className="rounded-lg border border-[var(--line)] px-3 py-1.5 text-xs text-[var(--muted)] hover:border-[var(--ink)] hover:text-[var(--ink)]" onClick={() => onCanvasH(Math.max(30, canvasH - 8))}>
+          − קיצור הקנבס
+        </button>
+      </div>
+      {sel !== null && selItem && (
+        <div className="mt-3 flex flex-wrap items-center gap-2">
           <button className="rounded-lg border border-[var(--line)] px-3 py-1.5 text-xs hover:border-[var(--ink)]" onClick={() => layer(sel, 1)}>שכבה קדימה ↑</button>
           <button className="rounded-lg border border-[var(--line)] px-3 py-1.5 text-xs hover:border-[var(--ink)]" onClick={() => layer(sel, -1)}>שכבה אחורה ↓</button>
+          <input
+            className="w-44 rounded-lg border border-[var(--line)] bg-white/[0.04] px-3 py-1.5 text-xs text-[var(--ink)] outline-none focus:border-[var(--ink)]/60"
+            placeholder="שם הצלם (יוצג בריחוף)"
+            value={selItem.credit ?? ""}
+            onChange={(e) => onChange(items.map((x, j) => (j === sel ? { ...x, credit: e.target.value } : x)))}
+          />
           <button
             className="rounded-lg border border-red-500/40 px-3 py-1.5 text-xs text-red-400"
             onClick={() => {
@@ -732,17 +788,47 @@ export default function Studio() {
         <p className="mb-4 text-xs text-[var(--muted)]">
           קולאז' חופשי — בדיוק כפי שייראה באתר. שינויים נשמרים רק אחרי "שמור ופרסם".
         </p>
-        <CollageCanvas items={btsList} onChange={setBts} />
+        <CollageCanvas
+          items={btsList}
+          canvasH={Number(content.btsCanvasH ?? 50)}
+          onChange={setBts}
+          onCanvasH={(h) => setContent({ ...content, bts: btsList, btsCanvasH: h })}
+        />
         <details className="mt-5">
-          <summary className="cursor-pointer text-xs text-[var(--muted)]">תצוגת נייד (שני טורים, לפי הסדר)</summary>
-          <div className="mx-auto mt-3 w-56 rounded-[1.6rem] border border-[var(--line)] p-2.5">
-            <div className="columns-2 gap-1.5 [&>img]:mb-1.5">
-              {btsList.map((b, i) => (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img key={b.src + i} src={b.src} alt="" className="w-full break-inside-avoid rounded-sm" />
-              ))}
-            </div>
-          </div>
+          <summary className="cursor-pointer text-xs text-[var(--muted)]">תצוגת נייד: שליטה בסדר (חצים על כל תמונה)</summary>
+          {(() => {
+            const ordered = btsList
+              .map((b, gi) => ({ b, gi }))
+              .sort((a, z) => ((a.b.m ?? a.gi) as number) - ((z.b.m ?? z.gi) as number));
+            function moveMobile(pos: number, dir: -1 | 1) {
+              const t = pos + dir;
+              if (t < 0 || t >= ordered.length) return;
+              const seq = [...ordered];
+              [seq[pos], seq[t]] = [seq[t], seq[pos]];
+              const next = [...btsList];
+              seq.forEach((entry, idx) => {
+                next[entry.gi] = { ...next[entry.gi], m: idx };
+              });
+              setBts(next);
+            }
+            return (
+              <div className="mx-auto mt-3 w-60 rounded-[1.6rem] border border-[var(--line)] p-2.5">
+                <div className="columns-2 gap-1.5">
+                  {ordered.map((entry, pos) => (
+                    <div key={entry.b.src + pos} className="relative mb-1.5 break-inside-avoid">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={entry.b.src} alt="" className="w-full rounded-sm" />
+                      <div className="absolute inset-x-0 bottom-0 flex justify-between bg-black/50 px-1 py-0.5">
+                        <button className="px-1 text-xs" onClick={() => moveMobile(pos, -1)}>↑</button>
+                        <span className="text-[0.55rem] text-[var(--muted)]">{pos + 1}</span>
+                        <button className="px-1 text-xs" onClick={() => moveMobile(pos, 1)}>↓</button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })()}
         </details>
 
         <div className="mt-4 flex items-center gap-3">
