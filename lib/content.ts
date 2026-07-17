@@ -9,7 +9,6 @@ export type Session = {
   titleHe: string;
   date?: string;
   youtubeId?: string;
-  smartlink?: string;
   appleMusic?: string;
   spotify?: string;
   songs?: string[];
