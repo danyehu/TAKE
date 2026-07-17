@@ -23,8 +23,9 @@
       "songs": [
         "Cut The Rope"
       ],
-      "descriptionEn": "Folly Tree steps into the room with a song stripped to its nerve. A live arrangement made for this session — direct, tender, and unrepeatable.",
-      "descriptionHe": "פולי טרי נכנסת לחדר עם שיר שהופשט עד העצב החשוף שלו. עיבוד חי שנוצר במיוחד לסשן — ישיר, עדין, ובלתי ניתן לשחזור."
+      "descriptionEn": "Folly Tree steps into the room with a song stripped to its nerve. A live arrangement made for this session, direct, tender, and unrepeatable.",
+      "descriptionHe": "פולי טרי נכנסת לחדר עם שיר שהופשט עד העצב החשוף שלו. עיבוד חי שנוצר במיוחד לסשן, ישיר, עדין, ובלתי ניתן לשחזור.",
+      "image": ""
     },
     {
       "slug": "griffin",
@@ -43,8 +44,9 @@
         "Observation of the Clouds",
         "Childish Prayer"
       ],
-      "descriptionEn": "The first TAKE. Griffin and his band inside HaMiffal — three songs, specially arranged, captured live in one close, breathing room.",
-      "descriptionHe": "הטייק הראשון. גריפין והלהקה בתוך המפעל — שלושה שירים בעיבודים מיוחדים, מוקלטים חיים בחדר אחד, קרוב ונושם."
+      "descriptionEn": "The first TAKE. Griffin and his band inside HaMiffal, three songs, specially arranged, captured live in one close, breathing room.",
+      "descriptionHe": "הטייק הראשון. גריפין והלהקה בתוך המפעל, שלושה שירים בעיבודים מיוחדים, מוקלטים חיים בחדר אחד, קרוב ונושם.",
+      "image": ""
     }
   ],
   "texts": {
@@ -58,15 +60,15 @@
       "hero": {
         "kicker": "Intimate live sessions · Filmed in Jerusalem",
         "tagline": "Live Sessions. Real Moments. One TAKE.",
-        "watch": "Watch on YouTube",
+        "watch": "Watch the latest session",
         "explore": "Explore sessions"
       },
-      "latest": "Latest release",
+      "latest": "New session",
       "about": {
         "label": "About",
         "title": "A room where something real happens",
         "p1": "TAKE is an independent cinematic live-session project created by Dan Yehuda and filmed at HaMiffal in Jerusalem. Each session brings an artist into a close, character-filled space to perform specially arranged versions of their music.",
-        "p2": "The project combines live performance, professional sound recording and intimate filmmaking — keeping the human reality of the moment at its center. The room, the musicians, the audience, the pauses, the details that cannot be recreated twice."
+        "p2": "The project combines live performance, professional sound recording and intimate filmmaking, keeping the human reality of the moment at its center. The room, the musicians, the audience, the pauses, the details that cannot be recreated twice."
       },
       "format": {
         "label": "The Format",
@@ -74,7 +76,7 @@
         "steps": [
           {
             "t": "Curation",
-            "d": "One artist per session. Songs chosen together, then rearranged — a version that exists only here."
+            "d": "One artist per session. Songs chosen together, then rearranged, a version that exists only here."
           },
           {
             "t": "One room",
@@ -86,7 +88,7 @@
           },
           {
             "t": "Release",
-            "d": "Full sessions and singles released to all platforms — a catalogue of moments that stay."
+            "d": "Full sessions and singles released to all platforms, a catalogue of moments that stay."
           }
         ]
       },
@@ -105,18 +107,18 @@
       "space": {
         "label": "The Space",
         "title": "HaMiffal, Jerusalem",
-        "p1": "TAKE is filmed at HaMiffal — an independent cultural institution in the heart of Jerusalem. Not a set, not a studio: a living building with textures, layers and marks of the people who make it.",
-        "p2": "The space gives every session its context — the acoustics, the warmth, the sense that you have walked into something that could only happen here, on this day."
+        "p1": "TAKE is filmed at HaMiffal, an independent cultural institution in the heart of Jerusalem. Not a set, not a studio: a living building with textures, layers and marks of the people who make it.",
+        "p2": "The space gives every session its context, the acoustics, the warmth, the sense that you have walked into something that could only happen here, on this day."
       },
       "artists": {
         "title": "For artists",
-        "p": "TAKE is a curated artistic partnership, not a video service. If the project speaks to you — reach out.",
+        "p": "TAKE is a curated artistic partnership, not a video service. If the project speaks to you, reach out.",
         "cta": "Get in touch"
       },
       "contact": {
         "label": "Contact",
         "title": "Stay close",
-        "p": "New sessions, releases and behind-the-scenes — occasionally, and only when it matters.",
+        "p": "New sessions, releases and behind-the-scenes, occasionally, and only when it matters.",
         "emailCta": "Write to us",
         "followYt": "YouTube",
         "followIg": "Instagram",
@@ -124,20 +126,20 @@
       },
       "footer": {
         "credit": "Created by Dan Yehuda · Filmed at HaMiffal, Jerusalem",
-        "dist": "Music distributed through Universal Music Israel"
+        "dist": "Distribution: Universal Music Israel"
       },
       "bts": {
         "label": "Behind the TAKE",
         "title": "A glimpse into the room",
-        "p": "Before the first note — the cameras, the walls, the people and the quiet work that make a TAKE."
+        "p": "Before the first note, the cameras, the walls, the people and the quiet work that make a TAKE."
       },
       "contactForm": {
         "name": "Your name",
         "email": "Your email",
         "message": "Your message",
         "send": "Send",
-        "sent": "Thank you — we got it. We read everything.",
-        "error": "Something went wrong — please try again or email us directly."
+        "sent": "Thank you, we got it. We read everything.",
+        "error": "Something went wrong, please try again or email us directly."
       }
     },
     "he": {
@@ -150,15 +152,15 @@
       "hero": {
         "kicker": "לייב סשנים אינטימיים · מצולם בירושלים",
         "tagline": "ביצועים חיים. רגעים אמיתיים. טֵיְיק אחד.",
-        "watch": "לצפייה ביוטיוב",
+        "watch": "לצפייה בסשן האחרון",
         "explore": "לכל הסשנים"
       },
-      "latest": "ריליס אחרון",
+      "latest": "סשן חדש",
       "about": {
         "label": "על הפרויקט",
         "title": "חדר שבו קורה משהו אמיתי",
         "p1": "טֵיְיק הוא פרויקט לייב סשנים מוזיקלי־קולנועי עצמאי, שנוצר על ידי דן יהודה ומצולם במפעל בירושלים. בכל סשן אמן או הרכב מבצעים גרסאות חיות ובעיבודים מיוחדים לשירים שלהם, בתוך חלל קרוב ובעל אופי.",
-        "p2": "הפרויקט מחבר בין ביצוע חי, הקלטת סאונד מקצועית וצילום אינטימי — תוך שמירה על האנושיות והאמת של הרגע. החלל, הנגנים, הקהל, המבטים, הנשימות והרגעים שלא ניתן לשחזר בדיוק באותה צורה."
+        "p2": "הפרויקט מחבר בין ביצוע חי, הקלטת סאונד מקצועית וצילום אינטימי, תוך שמירה על האנושיות והאמת של הרגע. החלל, הנגנים, הקהל, המבטים, הנשימות והרגעים שלא ניתן לשחזר בדיוק באותה צורה."
       },
       "format": {
         "label": "הפורמט",
@@ -166,7 +168,7 @@
         "steps": [
           {
             "t": "אוצרות",
-            "d": "אמן אחד בכל סשן. השירים נבחרים יחד ומעובדים מחדש — גרסה שקיימת רק כאן."
+            "d": "אמן אחד בכל סשן. השירים נבחרים יחד ומעובדים מחדש, גרסה שקיימת רק כאן."
           },
           {
             "t": "חדר אחד",
@@ -178,7 +180,7 @@
           },
           {
             "t": "ריליס",
-            "d": "סשנים מלאים וסינגלים בכל הפלטפורמות — קטלוג של רגעים שנשארים."
+            "d": "סשנים מלאים וסינגלים בכל הפלטפורמות, קטלוג של רגעים שנשארים."
           }
         ]
       },
@@ -197,18 +199,18 @@
       "space": {
         "label": "המקום",
         "title": "המפעל, ירושלים",
-        "p1": "טֵיְיק מצולם במפעל — מוסד תרבות עצמאי בלב ירושלים. לא סט ולא אולפן: מבנה חי, עם טקסטורות, שכבות וסימנים של האנשים שיוצרים אותו.",
-        "p2": "המקום מעניק לכל סשן את ההקשר שלו — האקוסטיקה, החום, והתחושה שנכנסת למשהו שיכול היה לקרות רק כאן, באותו יום."
+        "p1": "טֵיְיק מצולם במפעל, מוסד תרבות עצמאי בלב ירושלים. לא סט ולא אולפן: מבנה חי, עם טקסטורות, שכבות וסימנים של האנשים שיוצרים אותו.",
+        "p2": "המקום מעניק לכל סשן את ההקשר שלו, האקוסטיקה, החום, והתחושה שנכנסת למשהו שיכול היה לקרות רק כאן, באותו יום."
       },
       "artists": {
         "title": "לאמנים",
-        "p": "טֵיְיק הוא שותפות אמנותית אוצרותית, לא שירות צילום. אם הפרויקט מדבר אליכם — דברו איתנו.",
+        "p": "טֵיְיק הוא שותפות אמנותית אוצרותית, לא שירות צילום. אם הפרויקט מדבר אליכם, דברו איתנו.",
         "cta": "צרו קשר"
       },
       "contact": {
         "label": "צרו קשר",
         "title": "להישאר קרובים",
-        "p": "סשנים חדשים, ריליסים ומאחורי הקלעים — מדי פעם, ורק כשזה שווה את זה.",
+        "p": "סשנים חדשים, ריליסים ומאחורי הקלעים, מדי פעם, ורק כשזה שווה את זה.",
         "emailCta": "כתבו לנו",
         "followYt": "יוטיוב",
         "followIg": "אינסטגרם",
@@ -216,20 +218,20 @@
       },
       "footer": {
         "credit": "נוצר על ידי דן יהודה · מצולם במפעל, ירושלים",
-        "dist": "המוזיקה מופצת דרך Universal Music Israel"
+        "dist": "חברת הפצה: Universal Music Israel"
       },
       "bts": {
-        "label": "מאחורי הקלעים",
+        "label": "מאחורי הטייק",
         "title": "הצצה אל תוך החדר",
-        "p": "רגע לפני הצליל הראשון — המצלמות, הקירות, האנשים והעבודה השקטה שמהם נולד טֵיְיק."
+        "p": "רגע לפני הצליל הראשון, המצלמות, הקירות, האנשים והעבודה השקטה שמהם נולד טֵיְיק."
       },
       "contactForm": {
         "name": "השם שלך",
         "email": "האימייל שלך",
         "message": "ההודעה שלך",
         "send": "שליחה",
-        "sent": "תודה — קיבלנו. אנחנו קוראים הכל.",
-        "error": "משהו השתבש — נסו שוב או כתבו לנו למייל."
+        "sent": "תודה, קיבלנו. אנחנו קוראים הכל.",
+        "error": "משהו השתבש, נסו שוב או כתבו לנו למייל."
       }
     }
   },
@@ -237,49 +239,49 @@
     {
       "src": "/bts/01.jpg",
       "ratio": 0.667,
-      "x": 2.1044776119402986,
-      "y": 1.567164179104478,
-      "w": 30.47761194029851
+      "x": 33,
+      "y": 5,
+      "w": 16
     },
     {
       "src": "/bts/02.jpg",
       "ratio": 1.5,
-      "x": 33.98507462686567,
-      "y": 1.9999999999999991,
-      "w": 35.07462686567164
+      "x": 1,
+      "y": 2,
+      "w": 30
     },
     {
       "src": "/bts/04.jpg",
       "ratio": 0.667,
-      "x": 70.46268656716417,
-      "y": 22.059701492537314,
-      "w": 27.23880597014925
+      "x": 83,
+      "y": 4,
+      "w": 15
     },
     {
       "src": "/bts/05.jpg",
       "ratio": 1.5,
-      "x": 34.283582089552255,
-      "y": 26.82089552238806,
-      "w": 34.47761194029851
+      "x": 51,
+      "y": 1,
+      "w": 30
     },
     {
       "src": "/bts/06.jpg",
       "ratio": 1.5,
-      "x": 70.16417910447761,
-      "y": 2.0895522388059744,
+      "x": 33,
+      "y": 30,
       "w": 28
     }
   ],
   "buttons": {
     "hero": [
       {
-        "labelEn": "Watch on YouTube",
-        "labelHe": "לצפייה ביוטיוב",
-        "url": "@latest",
+        "labelEn": "Watch the latest session",
+        "labelHe": "לצפייה בסשן האחרון",
+        "url": "@latestPage",
         "style": "primary"
       },
       {
-        "labelEn": "Explore sessions ↓",
+        "labelEn": "All sessions ↓",
         "labelHe": "לכל הסשנים ↓",
         "url": "#sessions",
         "style": "ghost"

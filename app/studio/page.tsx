@@ -25,6 +25,7 @@ const FIELD_LABELS: Record<string, string> = {
   titleHe: "כותרת — עברית",
   date: "תאריך (YYYY-MM-DD)",
   youtubeId: "מזהה סרטון יוטיוב",
+  image: "תמונת רקע לכרטיס ולעמוד (כתובת או נתיב; ריק = תמונה מיוטיוב)",
   smartlink: "סמארט-לינק",
   appleMusic: "קישור אפל מיוזיק",
   spotify: "קישור ספוטיפיי",
@@ -148,16 +149,18 @@ function CollageCanvas({
     const b = items[d.i];
     const ratio = b.ratio ?? 1.5;
     let next: CanvasItem;
+    const GRID = 2; // הצמדה לגריד, שומר על סדר
+    const snap = (v: number) => Math.round(v / GRID) * GRID;
     if (d.mode === "move") {
       const w = b.w ?? 20;
       const h = w / ratio;
       next = {
         ...b,
-        x: Math.min(Math.max(d.ox + dx, -w * 0.4), CANVAS.w - w * 0.6),
-        y: Math.min(Math.max(d.oy + dy, -h * 0.4), CANVAS.h - h * 0.3),
+        x: snap(Math.min(Math.max(d.ox + dx, 0), CANVAS.w - w)),
+        y: snap(Math.min(Math.max(d.oy + dy, 0), Math.max(0, CANVAS.h - h))),
       };
     } else {
-      const w = Math.min(Math.max(d.ow + dx, 6), CANVAS.w);
+      const w = snap(Math.min(Math.max(d.ow + dx, 6), CANVAS.w));
       next = { ...b, w };
     }
     onChange(items.map((x, j) => (j === d.i ? next : x)));
@@ -188,7 +191,12 @@ function CollageCanvas({
         dir="ltr"
         onPointerDown={() => setSel(null)}
         className="relative w-full touch-none overflow-hidden rounded-xl border border-dashed border-[var(--ink)]/25 bg-[var(--bg)]"
-        style={{ aspectRatio: `${CANVAS.w} / ${CANVAS.h}` }}
+        style={{
+          aspectRatio: `${CANVAS.w} / ${CANVAS.h}`,
+          backgroundImage:
+            "linear-gradient(to right, rgba(244,241,234,0.04) 1px, transparent 1px), linear-gradient(to bottom, rgba(244,241,234,0.04) 1px, transparent 1px)",
+          backgroundSize: "2% 4%",
+        }}
       >
         {items.map((b, i) => {
           const w = b.w ?? 20;
@@ -707,6 +715,18 @@ export default function Studio() {
           קולאז' חופשי — בדיוק כפי שייראה באתר. שינויים נשמרים רק אחרי "שמור ופרסם".
         </p>
         <CollageCanvas items={btsList} onChange={setBts} />
+        <details className="mt-5">
+          <summary className="cursor-pointer text-xs text-[var(--muted)]">תצוגת נייד (שני טורים, לפי הסדר)</summary>
+          <div className="mx-auto mt-3 w-56 rounded-[1.6rem] border border-[var(--line)] p-2.5">
+            <div className="columns-2 gap-1.5 [&>img]:mb-1.5">
+              {btsList.map((b, i) => (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img key={b.src + i} src={b.src} alt="" className="w-full break-inside-avoid rounded-sm" />
+              ))}
+            </div>
+          </div>
+        </details>
+
         <div className="mt-4 flex items-center gap-3">
           <button
             className="rounded-full border border-dashed border-[var(--line)] px-5 py-2.5 text-sm text-[var(--muted)] transition hover:border-[var(--ink)] hover:text-[var(--ink)]"

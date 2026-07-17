@@ -15,6 +15,7 @@ export type Session = {
   songs?: string[];
   descriptionEn?: string;
   descriptionHe?: string;
+  image?: string;
 };
 
 export const sessions = data.sessions as Session[];
@@ -52,6 +53,7 @@ export const buttons: Record<string, Btn[]> = (data as any).buttons ?? {};
 /** ממיר יעדי כפתור מיוחדים (@latest, @email, @youtube...) לכתובת אמיתית */
 export function resolveBtnUrl(url: string, latestVideoId?: string): string {
   if (url === "@latest") return `https://www.youtube.com/watch?v=${latestVideoId ?? ""}`;
+  if (url === "@latestPage") return `/sessions/${released[0]?.slug ?? ""}`;
   if (url === "@email") return `mailto:${links.email}?subject=TAKE`;
   if (url.startsWith("@")) {
     const key = url.slice(1) as keyof typeof links;

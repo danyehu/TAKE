@@ -1,11 +1,13 @@
 import Link from "next/link";
 import { dict, type Lang } from "@/lib/i18n";
-import { sessions, links, bts, BTS_CANVAS, buttons, resolveBtnUrl, ytId, type Session, type Btn } from "@/lib/content";
+import { sessions, released, links, bts, BTS_CANVAS, buttons, resolveBtnUrl, ytId, type Session, type Btn } from "@/lib/content";
+import { YtIcon, SpotifyIcon, AppleIcon, InstaIcon } from "@/components/icons";
 import { getLatestVideo } from "@/lib/latest";
 import { ContactForm, Diamonds, MobileMenu, Reveal, YouTube } from "@/components/ui";
 
 function BtnLink({ b, lang, latestId }: { b: Btn; lang: Lang; latestId?: string }) {
-  const url = resolveBtnUrl(b.url, latestId);
+  let url = resolveBtnUrl(b.url, latestId);
+  if (url.startsWith("/") && lang === "he") url = `/he${url}`;
   const external = url.startsWith("http") || url.startsWith("mailto");
   return (
     <a
@@ -26,11 +28,9 @@ export function Nav({ lang }: { lang: Lang }) {
   return (
     <header className="fixed top-0 z-40 w-full border-b hairline bg-[rgba(11,11,12,0.72)] backdrop-blur-md">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-        <Link href={hrefFor(lang, "/")} className="flex items-center gap-3">
-          <Diamonds className="h-5 w-auto text-[var(--ink)]" />
-          <span className="display text-xl tracking-[0.18em]">
-            {lang === "he" ? "טֵיְיק" : "TAKE"}
-          </span>
+        <Link href={hrefFor(lang, "/")} aria-label="TAKE" className="flex items-center">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo.png" alt="TAKE טייק تييك" className="h-9 w-auto sm:h-10" />
         </Link>
         <nav className="flex items-center gap-6 text-[0.72rem] uppercase tracking-[0.22em] text-[var(--muted)]">
           <a href={hrefFor(lang, "/") + "#sessions"} className="hidden transition hover:text-[var(--ink)] sm:block">
@@ -47,6 +47,15 @@ export function Nav({ lang }: { lang: Lang }) {
           </a>
           <a href={hrefFor(lang, "/") + "#contact"} className="hidden transition hover:text-[var(--ink)] sm:block">
             {t.nav.contact}
+          </a>
+          <a
+            href={links.youtube}
+            target="_blank"
+            rel="noreferrer"
+            aria-label="YouTube"
+            className="hidden text-[var(--muted)] transition-colors hover:text-[var(--ink)] sm:block"
+          >
+            <YtIcon className="h-4.5 w-5" />
           </a>
           <a href={t.switchHref} className="hidden border hairline px-3 py-1.5 transition hover:border-[var(--ink)] hover:text-[var(--ink)] sm:block">
             {t.switchLabel}
@@ -75,18 +84,28 @@ export function Footer({ lang }: { lang: Lang }) {
       <div className="mx-auto flex max-w-6xl flex-col items-center gap-6 px-6 py-14 text-center">
         <Diamonds className="h-6 w-auto text-[var(--muted)]" />
         <p className="display text-lg tracking-wide">{dict[lang].hero.tagline}</p>
-        <div className="flex flex-wrap justify-center gap-6 text-[0.7rem] uppercase tracking-[0.22em] text-[var(--muted)]">
-          {(buttons.footer ?? []).map((b, i) => (
-            <a
-              key={i}
-              href={resolveBtnUrl(b.url)}
-              target="_blank"
-              rel="noreferrer"
-              className="transition hover:text-[var(--ink)]"
-            >
-              {lang === "he" ? b.labelHe : b.labelEn}
-            </a>
-          ))}
+        <div className="flex flex-col items-center gap-5 sm:flex-row sm:gap-12">
+          <div className="flex flex-col items-center gap-3">
+            <span className="text-[0.6rem] uppercase tracking-[0.28em] text-[var(--muted)]/70">
+              {lang === "he" ? "האזנה וצפייה" : "Listen & Watch"}
+            </span>
+            <div className="flex items-center gap-6 text-[var(--muted)]">
+              <a href={links.youtube} target="_blank" rel="noreferrer" aria-label="YouTube" className="transition-colors hover:text-[var(--ink)]"><YtIcon className="h-5 w-6" /></a>
+              {links.spotifyArtist && (
+                <a href={links.spotifyArtist} target="_blank" rel="noreferrer" aria-label="Spotify" className="transition-colors hover:text-[var(--ink)]"><SpotifyIcon className="h-5 w-5" /></a>
+              )}
+              <a href={links.appleArtist} target="_blank" rel="noreferrer" aria-label="Apple Music" className="transition-colors hover:text-[var(--ink)]"><AppleIcon className="h-5 w-5" /></a>
+            </div>
+          </div>
+          <div className="hidden h-8 w-px bg-[var(--line)] sm:block" />
+          <div className="flex flex-col items-center gap-3">
+            <span className="text-[0.6rem] uppercase tracking-[0.28em] text-[var(--muted)]/70">
+              {lang === "he" ? "עקבו אחרינו" : "Follow"}
+            </span>
+            <div className="flex items-center gap-6 text-[var(--muted)]">
+              <a href={links.instagram} target="_blank" rel="noreferrer" aria-label="Instagram" className="transition-colors hover:text-[var(--ink)]"><InstaIcon className="h-5 w-5" /></a>
+            </div>
+          </div>
         </div>
         <div className="space-y-1 text-xs text-[var(--muted)]">
           <p>{t.footer.credit}</p>
@@ -119,10 +138,10 @@ function SessionCard({ s, lang }: { s: Session; lang: Lang }) {
       href={hrefFor(lang, `/sessions/${s.slug}`)}
       className="group relative block aspect-video overflow-hidden border hairline bg-[var(--bg2)] transition-[transform,border-color] duration-200 ease-out active:scale-[0.99] sm:hover:-translate-y-1 sm:hover:border-[var(--ink)]/40"
     >
-      {s.youtubeId ? (
+      {s.image || s.youtubeId ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
-          src={`https://i.ytimg.com/vi/${ytId(s.youtubeId)}/maxresdefault.jpg`}
+          src={s.image || `https://i.ytimg.com/vi/${ytId(s.youtubeId)}/maxresdefault.jpg`}
           alt={`${artist} — ${title}`}
           className="h-full w-full object-cover opacity-70 transition-[transform,opacity] duration-500 ease-out group-hover:scale-[1.03] group-hover:opacity-90"
         />
@@ -133,9 +152,14 @@ function SessionCard({ s, lang }: { s: Session; lang: Lang }) {
       )}
       <div className="absolute inset-0 bg-gradient-to-t from-[rgba(11,11,12,0.92)] via-transparent to-transparent" />
       <div className="absolute inset-x-0 bottom-0 flex items-end justify-between p-6">
-        <div>
+        <div className="min-w-0">
           <p className="display text-2xl">{artist}</p>
           <p className="mt-1 text-sm text-[var(--muted)]">{title}</p>
+          {(lang === "he" ? s.descriptionHe : s.descriptionEn) && (
+            <p className="mt-2 hidden max-w-md truncate text-xs leading-relaxed text-[var(--muted)]/80 sm:block">
+              {lang === "he" ? s.descriptionHe : s.descriptionEn}
+            </p>
+          )}
         </div>
         {s.date && (
           <p className="label">{new Date(s.date).getFullYear()}</p>
@@ -148,15 +172,23 @@ function SessionCard({ s, lang }: { s: Session; lang: Lang }) {
 export async function Home({ lang }: { lang: Lang }) {
   const t = dict[lang];
   const latestVideo = await getLatestVideo();
+  const latestSession = released[0];
+  const heroImg =
+    latestSession?.image ||
+    (latestVideo.id ? `https://i.ytimg.com/vi/${latestVideo.id}/maxresdefault.jpg` : "");
+  const latestName =
+    lang === "he"
+      ? `${latestSession?.artistHe ?? ""}`
+      : `${latestSession?.artistEn ?? ""}`;
 
   return (
     <main>
       {/* HERO */}
       <section className="relative flex min-h-svh items-center justify-center overflow-hidden">
-        {latestVideo.id && (
+        {heroImg && (
           // eslint-disable-next-line @next/next/no-img-element
           <img
-            src={`https://i.ytimg.com/vi/${latestVideo.id}/maxresdefault.jpg`}
+            src={heroImg}
             alt=""
             aria-hidden
             className="absolute inset-0 h-full w-full scale-105 object-cover opacity-35 blur-[2px]"
@@ -168,15 +200,10 @@ export async function Home({ lang }: { lang: Lang }) {
             <Diamonds className="mx-auto h-8 w-auto text-[var(--ink)]" />
           </Reveal>
           <Reveal delay={100}>
-            <a
-              href={`https://www.youtube.com/watch?v=${latestVideo.id}`}
-              target="_blank"
-              rel="noreferrer"
-              className="pill max-w-[90vw]"
-            >
+            <Link href={hrefFor(lang, `/sessions/${latestSession?.slug ?? ""}`)} className="pill max-w-[90vw]">
               <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--ink)]" />
-              <span className="truncate">{t.latest} — {latestVideo.title}</span>
-            </a>
+              <span className="truncate">{t.latest} · {latestName}</span>
+            </Link>
           </Reveal>
           <Reveal delay={200}>
             <p className="label">{t.hero.kicker}</p>

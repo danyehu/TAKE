@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "../globals.css";
 import { Nav, Footer } from "@/components/site";
-import { Intro, SmoothScroll } from "@/components/ui";
+import { SmoothScroll } from "@/components/ui";
 import { SITE_URL } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -68,7 +68,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className={"grain font-[family-name:var(--font-sans)]"}>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }} />
-        <Intro />
         <SmoothScroll />
         <Nav lang="en" />
         {children}

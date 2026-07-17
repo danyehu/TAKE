@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
 /* Three diamonds — the TAKE mark */
 export function Diamonds({ className = "" }: { className?: string }) {
@@ -132,8 +133,8 @@ export function MobileMenu({
         <span className={`h-px w-5 bg-[var(--ink)] transition-opacity duration-200 ease-out ${open ? "opacity-0" : ""}`} />
         <span className={`h-px w-5 bg-[var(--ink)] transition-transform duration-200 ease-out ${open ? "-translate-y-[6px] -rotate-45" : ""}`} />
       </button>
-      {open && (
-        <div className="menu-overlay fixed inset-0 top-[57px] z-30 flex flex-col items-center justify-center gap-8 bg-[rgba(11,11,12,0.97)] backdrop-blur-md">
+      {open && typeof document !== "undefined" && createPortal(
+        <div className="menu-overlay fixed inset-0 z-[90] flex flex-col items-center justify-center gap-8 bg-[#0b0b0c]/[0.98]">
           <Diamonds className="h-6 w-auto text-[var(--muted)]" />
           {links.map((l) => (
             <a
@@ -148,7 +149,15 @@ export function MobileMenu({
           <a href={switchHref} className="mt-4 border border-[var(--line)] px-6 py-2.5 text-[0.72rem] uppercase tracking-[0.22em] text-[var(--muted)]">
             {switchLabel}
           </a>
-        </div>
+          <button
+            aria-label="Close"
+            onClick={() => setOpen(false)}
+            className="absolute top-4 flex h-10 w-10 items-center justify-center text-2xl text-[var(--muted)] ltr:right-5 rtl:left-5"
+          >
+            ✕
+          </button>
+        </div>,
+        document.body
       )}
     </div>
   );
@@ -208,7 +217,12 @@ export function ContactForm({
       const res = await fetch(`https://formsubmit.co/ajax/${email}`, {
         method: "POST",
         headers: { "content-type": "application/json", accept: "application/json" },
-        body: JSON.stringify({ ...data, _subject: "פנייה חדשה מאתר TAKE" }),
+        body: JSON.stringify({
+          ...data,
+          _subject: `פנייה חדשה מהאתר: ${String(data.name ?? "")}`,
+          _replyto: String(data.email ?? ""),
+          _template: "table",
+        }),
       });
       if (!res.ok) throw new Error();
       form.reset();

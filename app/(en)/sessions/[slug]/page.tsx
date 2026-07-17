@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     openGraph: {
       title: `${s.artistEn} — ${s.titleEn} · TAKE Live Session`,
       description: s.descriptionEn,
-      images: s.youtubeId ? [`https://i.ytimg.com/vi/${ytId(s.youtubeId)}/maxresdefault.jpg`] : [],
+      images: s.image ? [s.image] : s.youtubeId ? [`https://i.ytimg.com/vi/${ytId(s.youtubeId)}/maxresdefault.jpg`] : [],
     },
   };
 }
