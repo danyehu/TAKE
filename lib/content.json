@@ -25,7 +25,7 @@
       ],
       "descriptionEn": "Folly Tree steps into the room with a song stripped to its nerve. A live arrangement made for this session, direct, tender, and unrepeatable.",
       "descriptionHe": "פולי טרי נכנסת לחדר עם שיר שהופשט עד העצב החשוף שלו. עיבוד חי שנוצר במיוחד לסשן, ישיר, עדין, ובלתי ניתן לשחזור.",
-      "image": ""
+      "image": "/bts/mrpgl6dq-follytree-youtube-thumbnail.jpg"
     },
     {
       "slug": "griffin",
@@ -252,7 +252,10 @@
       "y": 28,
       "w": 28,
       "credit": "עומר דולב",
-      "m": 2
+      "m": 2,
+      "mx": 8,
+      "my": 40,
+      "mw": 44
     },
     {
       "src": "/bts/02.jpg",
@@ -261,7 +264,10 @@
       "y": 4,
       "w": 32,
       "credit": "עומר דולב",
-      "m": 1
+      "m": 1,
+      "mx": 52,
+      "my": 0,
+      "mw": 44
     },
     {
       "src": "/bts/06.jpg",
@@ -270,7 +276,10 @@
       "y": 0,
       "w": 40,
       "credit": "עומר דולב",
-      "m": 4
+      "m": 4,
+      "mx": 0,
+      "my": 4,
+      "mw": 44
     },
     {
       "src": "/bts/01.jpg",
@@ -279,7 +288,10 @@
       "y": 28,
       "w": 32,
       "credit": "עומר דולב",
-      "m": 0
+      "m": 0,
+      "mx": 60,
+      "my": 36,
+      "mw": 32
     },
     {
       "src": "/bts/05.jpg",
@@ -288,7 +300,10 @@
       "y": 32,
       "w": 28,
       "credit": "עומר דולב",
-      "m": 3
+      "m": 3,
+      "mx": 56,
+      "my": 92,
+      "mw": 40
     }
   ],
   "buttons": {
