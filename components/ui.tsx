@@ -135,18 +135,23 @@ export function MobileMenu({
       </button>
       {open && typeof document !== "undefined" && createPortal(
         <div className="menu-overlay fixed inset-0 z-[90] flex flex-col items-center justify-center gap-8 bg-[#0b0b0c]/[0.98]">
-          <Diamonds className="h-6 w-auto text-[var(--muted)]" />
-          {links.map((l) => (
+          <span className="menu-item" style={{ animationDelay: "40ms" }}><Diamonds className="h-6 w-auto text-[var(--muted)]" /></span>
+          {links.map((l, i) => (
             <a
               key={l.href}
               href={l.href}
               onClick={() => setOpen(false)}
-              className="display text-3xl tracking-wide"
+              className="menu-item display text-3xl tracking-wide"
+              style={{ animationDelay: `${90 + i * 50}ms` }}
             >
               {l.label}
             </a>
           ))}
-          <a href={switchHref} className="mt-4 border border-[var(--line)] px-6 py-2.5 text-[0.72rem] uppercase tracking-[0.22em] text-[var(--muted)]">
+          <a
+            href={switchHref}
+            className="menu-item mt-4 border border-[var(--line)] px-6 py-2.5 text-[0.72rem] uppercase tracking-[0.22em] text-[var(--muted)]"
+            style={{ animationDelay: `${90 + links.length * 50}ms` }}
+          >
             {switchLabel}
           </a>
           <button

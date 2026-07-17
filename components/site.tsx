@@ -30,7 +30,7 @@ export function Nav({ lang }: { lang: Lang }) {
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
         <Link href={hrefFor(lang, "/")} aria-label="TAKE" className="flex items-center">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo.png" alt="TAKE טייק تييك" className="h-11 w-auto opacity-90 transition-[transform,opacity] duration-200 ease-out hover:scale-[1.04] hover:opacity-100 sm:h-12" />
+          <img src="/logo.png" alt="TAKE טייק تييك" className="h-11 w-auto opacity-90 transition-[transform,opacity] duration-200 ease-out active:scale-[0.96] sm:h-12 sm:hover:scale-[1.04] sm:hover:opacity-100" />
         </Link>
         <nav className="flex items-center gap-6 text-[0.72rem] uppercase tracking-[0.22em] text-[var(--muted)]">
           <a href={hrefFor(lang, "/") + "#sessions"} className="hidden transition hover:text-[var(--ink)] sm:block">
@@ -392,23 +392,23 @@ export function SessionView({ s, lang }: { s: Session; lang: Lang }) {
       </div>
 
       <div className="mt-14 grid gap-14 sm:grid-cols-[1.5fr_1fr]">
-        <div>
+        <div className="min-w-0">
           {desc && <p className="text-lg leading-relaxed text-[var(--muted)]">{desc}</p>}
-          <div className="mt-10 flex flex-nowrap items-center gap-3 overflow-x-auto pb-1">
+          <div className="mt-10 flex flex-wrap items-center gap-3 sm:flex-nowrap">
             {s.youtubeId && (
-              <a href={`https://www.youtube.com/watch?v=${ytId(s.youtubeId)}`} target="_blank" rel="noreferrer" className="btn btn-primary shrink-0 !gap-2.5 !px-6">
+              <a href={`https://www.youtube.com/watch?v=${ytId(s.youtubeId)}`} target="_blank" rel="noreferrer" className="btn btn-primary !gap-2.5 !px-5 sm:shrink-0 sm:!px-6">
                 <YtIcon className="h-3.5 w-4.5" />
                 {t.sessions.watchYt}
               </a>
             )}
             {s.spotify && (
-              <a href={s.spotify} target="_blank" rel="noreferrer" className="btn btn-ghost shrink-0 !gap-2.5 !px-6">
+              <a href={s.spotify} target="_blank" rel="noreferrer" className="btn btn-ghost !gap-2.5 !px-5 sm:shrink-0 sm:!px-6">
                 <SpotifyIcon className="h-4 w-4" />
                 Spotify
               </a>
             )}
             {s.appleMusic && (
-              <a href={s.appleMusic} target="_blank" rel="noreferrer" className="btn btn-ghost shrink-0 !gap-2.5 !px-6">
+              <a href={s.appleMusic} target="_blank" rel="noreferrer" className="btn btn-ghost !gap-2.5 !px-5 sm:shrink-0 sm:!px-6">
                 <AppleIcon className="h-4 w-4" />
                 Apple Music
               </a>
