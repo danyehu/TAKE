@@ -10,8 +10,9 @@ export default function NotFound() {
 
   useEffect(() => {
     const cookieLang = document.cookie.match(/take-lang=(\w+)/)?.[1];
-    const browserHe = (navigator.language || "").toLowerCase().startsWith("he");
-    setHe(cookieLang ? cookieLang === "he" : browserHe);
+    const langs = [navigator.language, ...(navigator.languages || [])].map((l) => (l || "").toLowerCase());
+    const browserHe = langs.some((l) => l.startsWith("he"));
+    setHe(browserHe || cookieLang === "he");
   }, []);
 
   const t = he ? dict.he.notFound : dict.en.notFound;
