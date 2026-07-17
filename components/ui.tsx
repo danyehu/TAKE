@@ -88,11 +88,11 @@ export function YouTube({
           <img
             src={`https://i.ytimg.com/vi/${id}/maxresdefault.jpg`}
             alt={title}
-            className="h-full w-full object-cover opacity-80 transition duration-700 group-hover:scale-[1.02] group-hover:opacity-100"
+            className="h-full w-full object-cover opacity-80 transition-[transform,opacity] duration-500 ease-out group-hover:scale-[1.02] group-hover:opacity-100"
           />
           <span className="absolute inset-0 vignette" />
           <span className="absolute inset-0 flex items-center justify-center">
-            <span className="flex h-20 w-20 items-center justify-center rounded-full border border-[var(--line)] bg-black/40 backdrop-blur-sm transition duration-500 group-hover:bg-black/60 group-hover:scale-110">
+            <span className="flex h-20 w-20 items-center justify-center rounded-full border border-[var(--line)] bg-black/40 backdrop-blur-sm transition-[transform,background-color] duration-200 ease-out group-hover:scale-105 group-hover:bg-black/60 group-active:scale-95">
               <svg viewBox="0 0 24 24" className="ml-1 h-7 w-7 fill-[var(--ink)]">
                 <path d="M8 5v14l11-7z" />
               </svg>
@@ -128,12 +128,12 @@ export function MobileMenu({
         onClick={() => setOpen(!open)}
         className="flex h-10 w-10 flex-col items-center justify-center gap-[5px]"
       >
-        <span className={`h-px w-5 bg-[var(--ink)] transition duration-300 ${open ? "translate-y-[6px] rotate-45" : ""}`} />
-        <span className={`h-px w-5 bg-[var(--ink)] transition duration-300 ${open ? "opacity-0" : ""}`} />
-        <span className={`h-px w-5 bg-[var(--ink)] transition duration-300 ${open ? "-translate-y-[6px] -rotate-45" : ""}`} />
+        <span className={`h-px w-5 bg-[var(--ink)] transition-transform duration-200 ease-out ${open ? "translate-y-[6px] rotate-45" : ""}`} />
+        <span className={`h-px w-5 bg-[var(--ink)] transition-opacity duration-200 ease-out ${open ? "opacity-0" : ""}`} />
+        <span className={`h-px w-5 bg-[var(--ink)] transition-transform duration-200 ease-out ${open ? "-translate-y-[6px] -rotate-45" : ""}`} />
       </button>
       {open && (
-        <div className="fixed inset-0 top-[57px] z-30 flex flex-col items-center justify-center gap-8 bg-[rgba(11,11,12,0.97)] backdrop-blur-md">
+        <div className="menu-overlay fixed inset-0 top-[57px] z-30 flex flex-col items-center justify-center gap-8 bg-[rgba(11,11,12,0.97)] backdrop-blur-md">
           <Diamonds className="h-6 w-auto text-[var(--muted)]" />
           {links.map((l) => (
             <a
@@ -289,8 +289,8 @@ export function Intro() {
         playsInline
         preload="auto"
         onEnded={() => setPhase("zoom")}
-        className={`absolute inset-0 h-full w-full object-cover mix-blend-screen transition-all duration-[800ms] ease-in ${
-          zooming ? "scale-[2.4] opacity-0" : "scale-100 opacity-100"
+        className={`absolute inset-0 h-full w-full object-cover mix-blend-screen transition-[transform,opacity,filter] duration-[800ms] [transition-timing-function:cubic-bezier(0.77,0,0.175,1)] ${
+          zooming ? "scale-[2.4] opacity-0 blur-sm" : "scale-100 opacity-100 blur-0"
         }`}
       />
     </div>

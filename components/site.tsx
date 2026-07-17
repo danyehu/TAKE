@@ -105,7 +105,7 @@ function SessionCard({ s, lang }: { s: Session; lang: Lang }) {
 
   if (s.status === "coming-soon") {
     return (
-      <div className="group relative flex aspect-video flex-col items-center justify-center gap-4 border hairline bg-[var(--bg2)] p-8 text-center transition duration-500 hover:-translate-y-1">
+      <div className="group relative flex aspect-video flex-col items-center justify-center gap-4 border hairline bg-[var(--bg2)] p-8 text-center transition-transform duration-200 ease-out sm:hover:-translate-y-1">
         <Diamonds className="h-5 w-auto text-[var(--muted)] opacity-60 transition duration-700 group-hover:opacity-100" />
         <p className="label">{t.sessions.comingSoon}</p>
         <p className="display text-2xl">{artist}</p>
@@ -117,14 +117,14 @@ function SessionCard({ s, lang }: { s: Session; lang: Lang }) {
   return (
     <Link
       href={hrefFor(lang, `/sessions/${s.slug}`)}
-      className="group relative block aspect-video overflow-hidden border hairline bg-[var(--bg2)] transition duration-500 hover:-translate-y-1 hover:border-[var(--ink)]/40"
+      className="group relative block aspect-video overflow-hidden border hairline bg-[var(--bg2)] transition-[transform,border-color] duration-200 ease-out active:scale-[0.99] sm:hover:-translate-y-1 sm:hover:border-[var(--ink)]/40"
     >
       {s.youtubeId ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
           src={`https://i.ytimg.com/vi/${ytId(s.youtubeId)}/maxresdefault.jpg`}
           alt={`${artist} — ${title}`}
-          className="h-full w-full object-cover opacity-70 transition duration-700 group-hover:scale-[1.04] group-hover:opacity-90"
+          className="h-full w-full object-cover opacity-70 transition-[transform,opacity] duration-500 ease-out group-hover:scale-[1.03] group-hover:opacity-90"
         />
       ) : (
         <div className="flex h-full w-full items-center justify-center">
