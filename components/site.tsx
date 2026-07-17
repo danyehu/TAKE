@@ -27,7 +27,11 @@ export function Nav({ lang }: { lang: Lang }) {
   const t = dict[lang];
   return (
     <header className="fixed top-0 z-40 w-full border-b hairline bg-[rgba(11,11,12,0.72)] backdrop-blur-md">
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+      <div
+        className={`mx-auto flex max-w-6xl items-center justify-between px-6 py-4 ${
+          lang === "he" ? "flex-row-reverse sm:flex-row" : ""
+        }`}
+      >
         <Link href={hrefFor(lang, "/")} aria-label="TAKE" className="flex items-center">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/logo.png" alt="TAKE טייק تييك" className="h-11 w-auto opacity-90 transition-[transform,opacity] duration-200 ease-out active:scale-[0.96] sm:h-12 sm:hover:scale-[1.04] sm:hover:opacity-100" />
