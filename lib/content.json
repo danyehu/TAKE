@@ -14,10 +14,11 @@
       "status": "released",
       "artistEn": "Folly Tree",
       "artistHe": "Folly Tree",
-      "titleEn": "Cut The Rope",
-      "titleHe": "Cut The Rope",
+      "titleEn": "Alex Moshe",
+      "titleHe": "אלכס משה",
       "date": "2026-01-07",
       "youtubeId": "-xIX4N40KEs",
+      "smartlink": "https://take.lnk.to/FollyTree",
       "appleMusic": "https://music.apple.com/il/album/cut-the-rope-take-live-session-single/1861512489",
       "spotify": "https://open.spotify.com/album/1b44RFNGETg26BEI8kprWX?si=SVGeM1o0QjGg8jdeP0Kifg",
       "songs": [
@@ -36,6 +37,7 @@
       "titleHe": "Griffin",
       "date": "2025-10-29",
       "youtubeId": "CyRbc0DGoVI",
+      "smartlink": "https://take.lnk.to/Griffin",
       "appleMusic": "https://music.apple.com/il/album/griffin-take-live-session-single/1847160379",
       "spotify": "https://open.spotify.com/album/3eyHw1cfzo5HwXlcgAB0zc?si=xPDiuSgKSkeVeiyi3Xqn7A",
       "songs": [
@@ -248,36 +250,36 @@
     {
       "src": "/bts/01.jpg",
       "ratio": 0.667,
-      "x": 33,
-      "y": 5,
+      "x": 20,
+      "y": 26,
       "w": 16
     },
     {
       "src": "/bts/02.jpg",
       "ratio": 1.5,
-      "x": 1,
+      "x": 0,
       "y": 2,
-      "w": 30
+      "w": 36
     },
     {
       "src": "/bts/04.jpg",
       "ratio": 0.667,
-      "x": 83,
-      "y": 4,
-      "w": 15
+      "x": 40,
+      "y": 8,
+      "w": 26
     },
     {
       "src": "/bts/05.jpg",
       "ratio": 1.5,
-      "x": 51,
-      "y": 1,
-      "w": 30
+      "x": 70,
+      "y": 22,
+      "w": 28
     },
     {
       "src": "/bts/06.jpg",
       "ratio": 1.5,
-      "x": 33,
-      "y": 30,
+      "x": 70,
+      "y": 2,
       "w": 28
     }
   ],
