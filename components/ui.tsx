@@ -209,7 +209,18 @@ export function ContactForm({
   labels,
 }: {
   email: string;
-  labels: { name: string; email: string; message: string; send: string; sent: string; error: string };
+  labels: {
+    name: string;
+    email: string;
+    message: string;
+    send: string;
+    sent: string;
+    error: string;
+    topic?: string;
+    topicGeneral?: string;
+    topicArtist?: string;
+    topicPress?: string;
+  };
 }) {
   const [state, setState] = useState<"idle" | "busy" | "sent" | "error">("idle");
 
@@ -224,7 +235,7 @@ export function ContactForm({
         headers: { "content-type": "application/json", accept: "application/json" },
         body: JSON.stringify({
           ...data,
-          _subject: `פנייה חדשה מהאתר: ${String(data.name ?? "")}`,
+          _subject: `פנייה מהאתר [${String(data.topic ?? "")}]: ${String(data.name ?? "")}`,
           _replyto: String(data.email ?? ""),
           _template: "table",
         }),
@@ -255,6 +266,11 @@ export function ContactForm({
         <input name="name" required placeholder={labels.name} className={inp} />
         <input name="email" type="email" required placeholder={labels.email} className={inp} />
       </div>
+      <select name="topic" required defaultValue={labels.topicGeneral} className={`${inp} appearance-none`}>
+        <option value={labels.topicGeneral}>{labels.topicGeneral}</option>
+        <option value={labels.topicArtist}>{labels.topicArtist}</option>
+        <option value={labels.topicPress}>{labels.topicPress}</option>
+      </select>
       <textarea name="message" required placeholder={labels.message} className={`${inp} min-h-32`} />
       <button type="submit" disabled={state === "busy"} className="btn btn-primary self-center disabled:opacity-50">
         {state === "busy" ? "..." : labels.send}

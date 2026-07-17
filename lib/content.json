@@ -110,8 +110,8 @@
         "p2": "The space gives every session its context, the acoustics, the warmth, the sense that you have walked into something that could only happen here, on this day."
       },
       "artists": {
-        "title": "For artists",
-        "p": "TAKE is a curated artistic partnership, not a video service. If the project speaks to you, reach out.",
+        "title": "Get in touch",
+        "p": "Artists? TAKE is a curated artistic partnership and we would love to meet. For everything else, a question, an idea or just hello, we are here.",
         "cta": "Get in touch"
       },
       "contact": {
@@ -138,7 +138,11 @@
         "message": "Your message",
         "send": "Send",
         "sent": "Thank you, we got it. We read everything.",
-        "error": "Something went wrong, please try again or email us directly."
+        "error": "Something went wrong, please try again or email us directly.",
+        "topic": "Topic",
+        "topicGeneral": "General",
+        "topicArtist": "I am an artist",
+        "topicPress": "Press & partnerships"
       },
       "notFound": {
         "title": "This page was not found",
@@ -207,8 +211,8 @@
         "p2": "המקום מעניק לכל סשן את ההקשר שלו, האקוסטיקה, החום, והתחושה שנכנסת למשהו שיכול היה לקרות רק כאן, באותו יום."
       },
       "artists": {
-        "title": "לאמנים",
-        "p": "טֵיְיק הוא שותפות אמנותית אוצרותית, לא שירות צילום. אם הפרויקט מדבר אליכם, דברו איתנו.",
+        "title": "צרו קשר",
+        "p": "אמנים? טייק הוא שותפות אמנותית אוצרותית ונשמח להכיר. ולכל השאר, שאלה, רעיון או סתם שלום, אנחנו כאן.",
         "cta": "צרו קשר"
       },
       "contact": {
@@ -235,7 +239,11 @@
         "message": "ההודעה שלך",
         "send": "שליחה",
         "sent": "תודה, קיבלנו. אנחנו קוראים הכל 🤍",
-        "error": "משהו השתבש, נסו שוב או כתבו לנו למייל -  take.live.sessions@gmail.com"
+        "error": "משהו השתבש, נסו שוב או כתבו לנו למייל -  take.live.sessions@gmail.com",
+        "topic": "נושא הפנייה",
+        "topicGeneral": "פנייה כללית",
+        "topicArtist": "אני אמן.ית",
+        "topicPress": "עיתונות ושיתופי פעולה"
       },
       "notFound": {
         "title": "הדף לא נמצא",
@@ -246,49 +254,49 @@
   },
   "bts": [
     {
-      "src": "/bts/04.jpg",
+      "src": "/bts/01.jpg",
       "ratio": 0.667,
-      "x": 4,
-      "y": 28,
-      "w": 28,
-      "credit": "עומר דולב",
-      "m": 2
+      "x": 16,
+      "y": 26,
+      "w": 16,
+      "credit": "",
+      "m": 0
     },
     {
       "src": "/bts/02.jpg",
       "ratio": 1.5,
-      "x": 24,
-      "y": 4,
-      "w": 32,
-      "credit": "עומר דולב",
+      "x": 0,
+      "y": 2,
+      "w": 36,
+      "credit": "",
       "m": 1
     },
     {
-      "src": "/bts/06.jpg",
-      "ratio": 1.5,
-      "x": 60,
-      "y": 0,
-      "w": 40,
-      "credit": "עומר דולב",
-      "m": 4
-    },
-    {
-      "src": "/bts/01.jpg",
+      "src": "/bts/04.jpg",
       "ratio": 0.667,
-      "x": 68,
-      "y": 28,
-      "w": 32,
-      "credit": "עומר דולב",
-      "m": 0
+      "x": 40,
+      "y": 8,
+      "w": 26,
+      "credit": "",
+      "m": 2
     },
     {
       "src": "/bts/05.jpg",
       "ratio": 1.5,
-      "x": 36,
-      "y": 32,
+      "x": 70,
+      "y": 22,
       "w": 28,
-      "credit": "עומר דולב",
+      "credit": "",
       "m": 3
+    },
+    {
+      "src": "/bts/06.jpg",
+      "ratio": 1.5,
+      "x": 70,
+      "y": 2,
+      "w": 28,
+      "credit": "",
+      "m": 4
     }
   ],
   "buttons": {
@@ -332,5 +340,6 @@
       }
     ]
   },
-  "btsCanvasH": 82
+  "btsCanvasH": 50,
+  "btsCanvasHM": 170
 }
