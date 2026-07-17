@@ -206,3 +206,34 @@ body {
     transform: none;
   }
 }
+
+/* טולטיפ קטן לאייקוני הניווט */
+.tip {
+  position: relative;
+}
+
+.tip::after {
+  content: attr(data-tip);
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%) translateY(-2px);
+  white-space: nowrap;
+  background: var(--bg2);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  padding: 0.3rem 0.7rem;
+  border-radius: 9999px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 150ms ease, transform 150ms var(--ease-out-strong);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .tip:hover::after {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}

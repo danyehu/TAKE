@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { dict, type Lang } from "@/lib/i18n";
 import { sessions, released, links, bts, BTS_CANVAS, buttons, resolveBtnUrl, ytId, type Session, type Btn } from "@/lib/content";
-import { YtIcon, SpotifyIcon, AppleIcon, InstaIcon } from "@/components/icons";
+import { YtIcon, SpotifyIcon, AppleIcon, InstaIcon, FbIcon } from "@/components/icons";
 import { getLatestVideo } from "@/lib/latest";
 import { ContactForm, Diamonds, MobileMenu, Reveal, YouTube } from "@/components/ui";
 
@@ -30,7 +30,7 @@ export function Nav({ lang }: { lang: Lang }) {
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
         <Link href={hrefFor(lang, "/")} aria-label="TAKE" className="flex items-center">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo.png" alt="TAKE טייק تييك" className="h-9 w-auto sm:h-10" />
+          <img src="/logo.png" alt="TAKE טייק تييك" className="h-11 w-auto opacity-90 transition-[transform,opacity] duration-200 ease-out hover:scale-[1.04] hover:opacity-100 sm:h-12" />
         </Link>
         <nav className="flex items-center gap-6 text-[0.72rem] uppercase tracking-[0.22em] text-[var(--muted)]">
           <a href={hrefFor(lang, "/") + "#sessions"} className="hidden transition hover:text-[var(--ink)] sm:block">
@@ -48,15 +48,19 @@ export function Nav({ lang }: { lang: Lang }) {
           <a href={hrefFor(lang, "/") + "#contact"} className="hidden transition hover:text-[var(--ink)] sm:block">
             {t.nav.contact}
           </a>
-          <a
-            href={links.youtube}
-            target="_blank"
-            rel="noreferrer"
-            aria-label="YouTube"
-            className="hidden text-[var(--muted)] transition-colors hover:text-[var(--ink)] sm:block"
-          >
-            <YtIcon className="h-4.5 w-5" />
-          </a>
+          <span className="hidden items-center gap-4 text-[var(--muted)] sm:flex">
+            <a href={links.youtube} target="_blank" rel="noreferrer" aria-label="YouTube" data-tip="YouTube" className="tip transition-colors hover:text-[var(--ink)]">
+              <YtIcon className="h-4 w-5" />
+            </a>
+            {links.spotifyArtist && (
+              <a href={links.spotifyArtist} target="_blank" rel="noreferrer" aria-label="Spotify" data-tip="Spotify" className="tip transition-colors hover:text-[var(--ink)]">
+                <SpotifyIcon className="h-4 w-4" />
+              </a>
+            )}
+            <a href={links.appleArtist} target="_blank" rel="noreferrer" aria-label="Apple Music" data-tip="Apple Music" className="tip transition-colors hover:text-[var(--ink)]">
+              <AppleIcon className="h-4 w-4" />
+            </a>
+          </span>
           <a href={t.switchHref} className="hidden border hairline px-3 py-1.5 transition hover:border-[var(--ink)] hover:text-[var(--ink)] sm:block">
             {t.switchLabel}
           </a>
@@ -104,6 +108,9 @@ export function Footer({ lang }: { lang: Lang }) {
             </span>
             <div className="flex items-center gap-6 text-[var(--muted)]">
               <a href={links.instagram} target="_blank" rel="noreferrer" aria-label="Instagram" className="transition-colors hover:text-[var(--ink)]"><InstaIcon className="h-5 w-5" /></a>
+              {links.facebook && (
+                <a href={links.facebook} target="_blank" rel="noreferrer" aria-label="Facebook" className="transition-colors hover:text-[var(--ink)]"><FbIcon className="h-5 w-5" /></a>
+              )}
             </div>
           </div>
         </div>
@@ -199,13 +206,7 @@ export async function Home({ lang }: { lang: Lang }) {
           <Reveal>
             <Diamonds className="mx-auto h-8 w-auto text-[var(--ink)]" />
           </Reveal>
-          <Reveal delay={100}>
-            <Link href={hrefFor(lang, `/sessions/${latestSession?.slug ?? ""}`)} className="pill max-w-[90vw]">
-              <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--ink)]" />
-              <span className="truncate">{t.latest} · {latestName}</span>
-            </Link>
-          </Reveal>
-          <Reveal delay={200}>
+                    <Reveal delay={200}>
             <p className="label">{t.hero.kicker}</p>
           </Reveal>
           <Reveal delay={300}>
@@ -358,9 +359,10 @@ export function SessionView({ s, lang }: { s: Session; lang: Lang }) {
     <main className="mx-auto max-w-5xl px-6 pt-32 pb-24">
       <Link
         href={hrefFor(lang, "/") + "#sessions"}
-        className="label transition hover:text-[var(--ink)]"
+        className="inline-flex items-center gap-2 rounded-full border border-[var(--line)] px-5 py-2.5 text-[0.68rem] uppercase tracking-[0.2em] text-[var(--muted)] transition-colors hover:border-[var(--ink)] hover:text-[var(--ink)]"
       >
-        ← {t.sessions.back}
+        <span aria-hidden>{lang === "he" ? "→" : "←"}</span>
+        {t.sessions.back}
       </Link>
       <div className="mt-10 flex flex-wrap items-end justify-between gap-4">
         <div>
@@ -392,24 +394,22 @@ export function SessionView({ s, lang }: { s: Session; lang: Lang }) {
       <div className="mt-14 grid gap-14 sm:grid-cols-[1.5fr_1fr]">
         <div>
           {desc && <p className="text-lg leading-relaxed text-[var(--muted)]">{desc}</p>}
-          <div className="mt-10 flex flex-wrap gap-4">
+          <div className="mt-10 flex flex-nowrap items-center gap-3 overflow-x-auto pb-1">
             {s.youtubeId && (
-              <a href={`https://www.youtube.com/watch?v=${ytId(s.youtubeId)}`} target="_blank" rel="noreferrer" className="btn btn-primary">
+              <a href={`https://www.youtube.com/watch?v=${ytId(s.youtubeId)}`} target="_blank" rel="noreferrer" className="btn btn-primary shrink-0 !gap-2.5 !px-6">
+                <YtIcon className="h-3.5 w-4.5" />
                 {t.sessions.watchYt}
               </a>
             )}
-            {s.smartlink && (
-              <a href={s.smartlink} target="_blank" rel="noreferrer" className="btn btn-ghost">
-                {t.sessions.streamOn}
-              </a>
-            )}
             {s.spotify && (
-              <a href={s.spotify} target="_blank" rel="noreferrer" className="btn btn-ghost">
+              <a href={s.spotify} target="_blank" rel="noreferrer" className="btn btn-ghost shrink-0 !gap-2.5 !px-6">
+                <SpotifyIcon className="h-4 w-4" />
                 Spotify
               </a>
             )}
             {s.appleMusic && (
-              <a href={s.appleMusic} target="_blank" rel="noreferrer" className="btn btn-ghost">
+              <a href={s.appleMusic} target="_blank" rel="noreferrer" className="btn btn-ghost shrink-0 !gap-2.5 !px-6">
+                <AppleIcon className="h-4 w-4" />
                 Apple Music
               </a>
             )}

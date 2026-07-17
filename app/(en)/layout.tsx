@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "../globals.css";
 import { Nav, Footer } from "@/components/site";
 import { SmoothScroll } from "@/components/ui";
+import { Analytics } from "@vercel/analytics/react";
 import { SITE_URL } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -71,6 +72,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <SmoothScroll />
         <Nav lang="en" />
         {children}
+        <Analytics />
         <Footer lang="en" />
       </body>
     </html>

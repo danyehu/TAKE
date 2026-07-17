@@ -14,6 +14,7 @@ const FIELD_LABELS: Record<string, string> = {
   youtube: "ערוץ יוטיוב",
   instagram: "אינסטגרם",
   appleArtist: "עמוד אמן באפל מיוזיק",
+  facebook: "עמוד פייסבוק",
   spotifyArtist: "עמוד אמן בספוטיפיי",
   email: "אימייל ליצירת קשר",
   youtubeChannelId: "מזהה ערוץ יוטיוב (לסרטון האחרון בדף הבית)",
@@ -708,6 +709,25 @@ export default function Studio() {
           ))}
         </div>
       ))}
+
+      <h2 className="label mb-3 mt-14">מעקב וסטטיסטיקות</h2>
+      <div className={cardCls}>
+        <p className="text-sm leading-relaxed text-[var(--muted)]">
+          נתוני הכניסות לאתר נאספים דרך Vercel Analytics: כמה מבקרים, מאיזה מקור הגיעו
+          (גוגל, אינסטגרם, קישור ישיר), מאיזו מדינה, אילו עמודים הכי נצפים וכמה זמן נשארים.
+        </p>
+        <a
+          href="https://vercel.com/take-livesessions/take/analytics"
+          target="_blank"
+          rel="noreferrer"
+          className="mt-4 inline-block rounded-full bg-[var(--ink)] px-6 py-2.5 text-sm font-medium text-[var(--bg)] transition hover:opacity-85"
+        >
+          פתיחת לוח הנתונים המלא ←
+        </a>
+        <p className="mt-3 text-xs text-[var(--muted)]/70">
+          בכניסה הראשונה: אם מופיע כפתור Enable, לחץ עליו פעם אחת והאיסוף יתחיל.
+        </p>
+      </div>
 
       <h2 className="label mb-3 mt-14">גלריית מאחורי הקלעים</h2>
       <div className={cardCls}>

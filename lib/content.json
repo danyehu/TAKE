@@ -3,8 +3,9 @@
     "youtube": "https://www.youtube.com/channel/UCOWfZo548mTzEoVrb399TcQ",
     "instagram": "https://www.instagram.com/take.live.sessions/",
     "appleArtist": "https://music.apple.com/il/artist/take/1847349204",
-    "spotifyArtist": "https://open.spotify.com/artist/6oQgY8rw1xUmzlBRyI8nUI?si=wnq2hrpdSyOy1WBKIn9hnQ",
-    "email": "takelivesessions@gmail.com"
+    "spotifyArtist": "https://open.spotify.com/artist/6oQgY8rw1xUmzlBRyI8nUI",
+    "email": "takelivesessions@gmail.com",
+    "facebook": "https://www.facebook.com/TakeLiveSession"
   },
   "youtubeChannelId": "UCOWfZo548mTzEoVrb399TcQ",
   "sessions": [
@@ -140,6 +141,11 @@
         "send": "Send",
         "sent": "Thank you, we got it. We read everything.",
         "error": "Something went wrong, please try again or email us directly."
+      },
+      "notFound": {
+        "title": "This page was not found",
+        "p": "Maybe it is still in rehearsal. Let us get you back to the room.",
+        "cta": "Back home"
       }
     },
     "he": {
@@ -232,6 +238,11 @@
         "send": "שליחה",
         "sent": "תודה, קיבלנו. אנחנו קוראים הכל.",
         "error": "משהו השתבש, נסו שוב או כתבו לנו למייל."
+      },
+      "notFound": {
+        "title": "הדף הזה לא נמצא",
+        "p": "אולי הוא עוד בחזרות. בוא נחזור לחדר שבו הכל קורה.",
+        "cta": "חזרה לדף הבית"
       }
     }
   },
