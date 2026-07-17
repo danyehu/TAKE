@@ -649,29 +649,36 @@ export default function Studio() {
   }
 
 
+  async function uploadFile(file: File): Promise<string> {
+    // הקטנה חכמה בדפדפן לפני העלאה
+    const img = document.createElement("img");
+    img.src = URL.createObjectURL(file);
+    await new Promise((ok, err) => ((img.onload = ok), (img.onerror = err)));
+    const scale = Math.min(1, 1800 / Math.max(img.width, img.height));
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.round(img.width * scale);
+    canvas.height = Math.round(img.height * scale);
+    canvas.getContext("2d")!.drawImage(img, 0, 0, canvas.width, canvas.height);
+    const base64 = canvas.toDataURL("image/jpeg", 0.82).split(",")[1];
+    const res = await fetch("/api/admin", {
+      method: "PUT",
+      headers: { "x-admin-password": password, "content-type": "application/json" },
+      body: JSON.stringify({ name: file.name.replace(/\.[^.]+$/, "") + ".jpg", dataBase64: base64 }),
+    });
+    if (!res.ok) throw new Error(await res.text());
+    const { path } = await res.json();
+    return path as string;
+  }
+
   async function uploadImage(file: File) {
     setBusy(true);
     setMsg("");
     try {
-      // הקטנה חכמה בדפדפן לפני העלאה
       const img = document.createElement("img");
       img.src = URL.createObjectURL(file);
       await new Promise((ok, err) => ((img.onload = ok), (img.onerror = err)));
-      const scale = Math.min(1, 1800 / Math.max(img.width, img.height));
-      const canvas = document.createElement("canvas");
-      canvas.width = Math.round(img.width * scale);
-      canvas.height = Math.round(img.height * scale);
-      canvas.getContext("2d")!.drawImage(img, 0, 0, canvas.width, canvas.height);
-      const dataUrl = canvas.toDataURL("image/jpeg", 0.82);
-      const base64 = dataUrl.split(",")[1];
-      const res = await fetch("/api/admin", {
-        method: "PUT",
-        headers: { "x-admin-password": password, "content-type": "application/json" },
-        body: JSON.stringify({ name: file.name.replace(/\.[^.]+$/, "") + ".jpg", dataBase64: base64 }),
-      });
-      if (!res.ok) throw new Error(await res.text());
-      const { path } = await res.json();
-      setBts([...btsList, { src: path, ratio: Math.round((img.width / img.height) * 100) / 100, x: 38, y: 14, w: 22 } as { src: string }]);
+      const path = await uploadFile(file);
+      setBts([...btsList, { src: path, ratio: Math.round((img.width / img.height) * 100) / 100, x: 0, y: 0, w: 24 } as { src: string }]);
       setMsg("התמונה הועלתה! עכשיו לחץ \"שמור ופרסם\" כדי שתופיע באתר.");
       setSaved(true);
     } catch {
@@ -749,33 +756,84 @@ export default function Studio() {
       </div>
 
       {sessions.map((s, i) => (
-        <div className={cardCls} key={i}>
-          <div className="mb-1 flex items-center justify-between">
+        <details className={cardCls} key={i}>
+          <summary className="flex cursor-pointer list-none items-center justify-between">
             <strong className="display text-lg">
               {(s.artistHe as string) || (s.artistEn as string) || `סשן חדש`}
+              <span className="mx-3 text-xs font-normal text-[var(--muted)]">
+                {s.status === "released" ? "פורסם" : "בקרוב"} · לחץ לעריכה
+              </span>
             </strong>
             <button
               className="text-xs text-red-400/80 transition hover:text-red-400"
-              onClick={() => {
+              onClick={(e) => {
+                e.preventDefault();
                 if (confirm("למחוק את הסשן הזה מהאתר?"))
                   setContent({ ...content, sessions: sessions.filter((_, j) => j !== i) });
               }}
             >
               מחיקת סשן
             </button>
-          </div>
-          {Object.entries(s).map(([k, v]) => (
-            <Field
-              key={k}
-              k={k}
-              value={v}
-              onChange={(nv) => {
-                const next = sessions.map((x, j) => (j === i ? { ...x, [k]: nv } : x));
-                setContent({ ...content, sessions: next });
-              }}
-            />
-          ))}
-        </div>
+          </summary>
+          {Object.entries(s).map(([k, v]) =>
+            k === "image" ? (
+              <div key={k}>
+                <span className={labelCls}>{FIELD_LABELS.image}</span>
+                <div className="flex items-center gap-3">
+                  {typeof v === "string" && v ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={v} alt="" className="h-14 w-24 rounded-lg border border-[var(--line)] object-cover" />
+                  ) : (
+                    <span className="flex h-14 w-24 items-center justify-center rounded-lg border border-dashed border-[var(--line)] text-[0.6rem] text-[var(--muted)]">מיוטיוב</span>
+                  )}
+                  <label className="cursor-pointer rounded-full border border-[var(--line)] px-4 py-2 text-xs text-[var(--muted)] transition hover:border-[var(--ink)] hover:text-[var(--ink)]">
+                    {busy ? "מעלה..." : "העלאת תמונה"}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={async (e) => {
+                        const f = e.target.files?.[0];
+                        e.target.value = "";
+                        if (!f) return;
+                        setBusy(true);
+                        try {
+                          const path = await uploadFile(f);
+                          setContent({ ...content, sessions: sessions.map((x, j) => (j === i ? { ...x, image: path } : x)) });
+                          setMsg("התמונה הועלתה. לחץ \"שמור ופרסם\" כדי שתופיע.");
+                          setSaved(true);
+                        } catch {
+                          setMsg("שגיאה בהעלאה");
+                          setSaved(false);
+                        } finally {
+                          setBusy(false);
+                        }
+                      }}
+                    />
+                  </label>
+                  {typeof v === "string" && v && (
+                    <button
+                      className="text-xs text-red-400/80 hover:text-red-400"
+                      onClick={() => setContent({ ...content, sessions: sessions.map((x, j) => (j === i ? { ...x, image: "" } : x)) })}
+                    >
+                      הסרה (חזרה ליוטיוב)
+                    </button>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <Field
+                key={k}
+                k={k}
+                value={v}
+                onChange={(nv) => {
+                  const next = sessions.map((x, j) => (j === i ? { ...x, [k]: nv } : x));
+                  setContent({ ...content, sessions: next });
+                }}
+              />
+            )
+          )}
+        </details>
       ))}
 
       <h2 className="label mb-3 mt-14">מעקב וסטטיסטיקות</h2>
