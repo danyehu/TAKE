@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     apple: "/apple-touch-icon.png",
   },
   twitter: { card: "summary_large_image", images: [`${SITE_URL}/og.jpg`] },
-  alternates: { canonical: "/", languages: { en: "/", he: "/he" } },
+  alternates: { canonical: "/", languages: { en: "/", he: "/he", "x-default": "/" } },
   openGraph: {
     title: "TAKE — Intimate Live Sessions Filmed in Jerusalem",
     description: "Live Sessions. Real Moments. One TAKE.",

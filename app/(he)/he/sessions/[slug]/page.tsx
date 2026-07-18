@@ -15,7 +15,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   return {
     title: `${s.artistHe} — ${s.titleHe}`,
     description: s.descriptionHe,
-    alternates: { canonical: `/he/sessions/${s.slug}`, languages: { en: `/sessions/${s.slug}`, he: `/he/sessions/${s.slug}` } },
+    alternates: { canonical: `/he/sessions/${s.slug}`, languages: { en: `/sessions/${s.slug}`, he: `/he/sessions/${s.slug}`, "x-default": `/sessions/${s.slug}` } },
   };
 }
 

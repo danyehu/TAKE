@@ -15,7 +15,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   return {
     title: `${s.artistEn} — ${s.titleEn}`,
     description: s.descriptionEn,
-    alternates: { canonical: `/sessions/${s.slug}`, languages: { en: `/sessions/${s.slug}`, he: `/he/sessions/${s.slug}` } },
+    alternates: { canonical: `/sessions/${s.slug}`, languages: { en: `/sessions/${s.slug}`, he: `/he/sessions/${s.slug}`, "x-default": `/sessions/${s.slug}` } },
     openGraph: {
       title: `${s.artistEn} — ${s.titleEn} · TAKE Live Session`,
       description: s.descriptionEn,
