@@ -19,6 +19,7 @@ export const metadata: Metadata = {
     icon: [{ url: "/favicon.ico" }, { url: "/favicon-32.png", sizes: "32x32" }, { url: "/icon-192.png", sizes: "192x192" }],
     apple: "/apple-touch-icon.png",
   },
+  twitter: { card: "summary_large_image", images: [`${SITE_URL}/og.jpg`] },
   alternates: { canonical: "/", languages: { en: "/", he: "/he" } },
   openGraph: {
     title: "TAKE — Intimate Live Sessions Filmed in Jerusalem",
@@ -26,7 +27,10 @@ export const metadata: Metadata = {
     url: SITE_URL,
     siteName: "TAKE",
     type: "website",
-    images: [{ url: `${SITE_URL}/og.jpg`, width: 1200, height: 630 }],
+    images: [
+      { url: `${SITE_URL}/og-square.jpg`, width: 1200, height: 1200 },
+      { url: `${SITE_URL}/og.jpg`, width: 1200, height: 630 },
+    ],
   },
 };
 
