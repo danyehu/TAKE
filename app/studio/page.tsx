@@ -322,6 +322,105 @@ function CollageCanvas({
   );
 }
 
+
+/* דשבורד מעקב: קורא נתונים מהגיליון ומציג ברור */
+function AnalyticsPanel({ url }: { url: string }) {
+  type Stats = {
+    today: number; week: number; month: number; signups: number;
+    days: Record<string, number>; paths: Record<string, number>;
+    refs: Record<string, number>; device: Record<string, number>;
+    lang: Record<string, number>; avgStay: number;
+  };
+  const [stats, setStats] = useState<Stats | null>(null);
+  const [err, setErr] = useState(false);
+
+  useEffect(() => {
+    if (!url) { setErr(true); return; }
+    fetch(`${url}?stats=1&key=take2026`)
+      .then((r) => r.json())
+      .then(setStats)
+      .catch(() => setErr(true));
+  }, [url]);
+
+  if (err)
+    return <p className="text-sm text-[var(--muted)]">אין עדיין חיבור נתונים. ודא שהסקריפט בגיליון עודכן לגרסה עם המעקב.</p>;
+  if (!stats) return <p className="text-sm text-[var(--muted)]">טוען נתונים...</p>;
+
+  const dayKeys = Object.keys(stats.days).sort().slice(-14);
+  const maxDay = Math.max(1, ...dayKeys.map((k) => stats.days[k]));
+  const pathNames: Record<string, string> = {
+    "/": "דף הבית (אנגלית)", "/he": "דף הבית (עברית)",
+  };
+  const topPaths = Object.entries(stats.paths).sort((a, b) => b[1] - a[1]).slice(0, 6);
+  const topRefs = Object.entries(stats.refs).sort((a, b) => b[1] - a[1]).slice(0, 6);
+  const devTotal = Object.values(stats.device).reduce((a, b) => a + b, 0) || 1;
+  const mm = Math.floor(stats.avgStay / 60);
+  const ss = Math.round(stats.avgStay % 60);
+
+  const stat = (label: string, value: string | number) => (
+    <div className="rounded-xl border border-[var(--line)] p-4 text-center">
+      <p className="display text-3xl">{value}</p>
+      <p className="mt-1 text-xs text-[var(--muted)]">{label}</p>
+    </div>
+  );
+
+  return (
+    <div className="space-y-6">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        {stat("צפיות היום", stats.today)}
+        {stat("השבוע", stats.week)}
+        {stat("החודש", stats.month)}
+        {stat("נרשמו לקהל", stats.signups)}
+      </div>
+
+      <div>
+        <p className="mb-2 text-xs text-[var(--muted)]">צפיות ב-14 הימים האחרונים</p>
+        <div className="flex h-24 items-end gap-1" dir="ltr">
+          {dayKeys.map((k) => (
+            <div key={k} className="group relative flex-1">
+              <div
+                className="w-full rounded-t bg-[var(--ink)]/70 transition-colors group-hover:bg-[var(--ink)]"
+                style={{ height: `${Math.max(4, (stats.days[k] / maxDay) * 90)}px` }}
+              />
+              <span className="pointer-events-none absolute -top-6 left-1/2 -translate-x-1/2 whitespace-nowrap rounded bg-[var(--bg2)] px-1.5 py-0.5 text-[0.55rem] text-[var(--ink)] opacity-0 group-hover:opacity-100">
+                {k.slice(5)} · {stats.days[k]}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="grid gap-6 sm:grid-cols-2">
+        <div>
+          <p className="mb-2 text-xs text-[var(--muted)]">עמודים נצפים</p>
+          {topPaths.map(([p, n]) => (
+            <div key={p} className="flex items-center justify-between border-b border-[var(--line)] py-1.5 text-sm">
+              <span className="truncate">{pathNames[p] ?? p.replace("/he/sessions/", "סשן: ").replace("/sessions/", "Session: ")}</span>
+              <span className="text-[var(--muted)]">{n}</span>
+            </div>
+          ))}
+        </div>
+        <div>
+          <p className="mb-2 text-xs text-[var(--muted)]">מאיפה הגיעו</p>
+          {topRefs.length === 0 && <p className="text-sm text-[var(--muted)]">בעיקר כניסות ישירות בינתיים</p>}
+          {topRefs.map(([r, n]) => (
+            <div key={r} className="flex items-center justify-between border-b border-[var(--line)] py-1.5 text-sm">
+              <span className="truncate" dir="ltr">{r || "ישיר"}</span>
+              <span className="text-[var(--muted)]">{n}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="flex flex-wrap gap-6 text-sm text-[var(--muted)]">
+        <span>📱 נייד: {Math.round(((stats.device["נייד"] ?? 0) / devTotal) * 100)}%</span>
+        <span>💻 מחשב: {Math.round(((stats.device["מחשב"] ?? 0) / devTotal) * 100)}%</span>
+        <span>⏱ זמן שהייה ממוצע: {mm}:{String(ss).padStart(2, "0")} דק׳</span>
+      </div>
+    </div>
+  );
+}
+
 const SECTION_LABELS: Record<string, string> = {
   nav: "תפריט ניווט",
   hero: "מסך פתיחה (Hero)",
@@ -840,20 +939,10 @@ export default function Studio() {
 
       <h2 className="label mb-3 mt-14">מעקב וסטטיסטיקות</h2>
       <div className={cardCls}>
-        <p className="text-sm leading-relaxed text-[var(--muted)]">
-          נתוני הכניסות לאתר נאספים דרך Vercel Analytics: כמה מבקרים, מאיזה מקור הגיעו
-          (גוגל, אינסטגרם, קישור ישיר), מאיזו מדינה, אילו עמודים הכי נצפים וכמה זמן נשארים.
-        </p>
-        <a
-          href="https://vercel.com/take-livesessions/take/analytics"
-          target="_blank"
-          rel="noreferrer"
-          className="mt-4 inline-block rounded-full bg-[var(--ink)] px-6 py-2.5 text-sm font-medium text-[var(--bg)] transition hover:opacity-85"
-        >
-          פתיחת לוח הנתונים המלא ←
-        </a>
-        <p className="mt-3 text-xs text-[var(--muted)]/70">
-          בכניסה הראשונה: אם מופיע כפתור Enable, לחץ עליו פעם אחת והאיסוף יתחיל.
+        <AnalyticsPanel url={String((content.links as Json).audienceForm ?? "")} />
+        <p className="mt-4 text-[0.6rem] text-[var(--muted)]/60">
+          הנתונים נאספים לגיליון של טייק בדרייב · לנתונים טכניים מפורטים יותר:{" "}
+          <a className="underline" href="https://vercel.com/take-livesessions/take/analytics" target="_blank" rel="noreferrer">Vercel Analytics</a>
         </p>
       </div>
 

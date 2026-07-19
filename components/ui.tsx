@@ -433,3 +433,36 @@ export function AudiencePopup({
     </div>
   );
 }
+
+/* מעקב צפיות עצמי: שולח אירוע צפייה וזמן שהייה לגיליון של TAKE */
+export function Track({ url }: { url?: string }) {
+  useEffect(() => {
+    if (!url || location.pathname.startsWith("/studio")) return;
+    const device = matchMedia("(max-width: 640px)").matches ? "נייד" : "מחשב";
+    try {
+      fetch(url, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "content-type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
+          type: "pv",
+          path: location.pathname,
+          ref: document.referrer || "",
+          lang: document.documentElement.lang || "",
+          device,
+        }),
+        keepalive: true,
+      });
+    } catch {}
+    const t0 = Date.now();
+    const onHide = () => {
+      const seconds = Math.round((Date.now() - t0) / 1000);
+      if (seconds < 2) return;
+      const body = new URLSearchParams({ type: "stay", path: location.pathname, seconds: String(seconds) });
+      if (navigator.sendBeacon) navigator.sendBeacon(url, body);
+    };
+    window.addEventListener("pagehide", onHide);
+    return () => window.removeEventListener("pagehide", onHide);
+  }, [url]);
+  return null;
+}
